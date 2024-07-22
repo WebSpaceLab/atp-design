@@ -10,8 +10,29 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@julr/unocss-preset-forms": "^0.1.0",
+    "@nuxt/content": "^2.13.2",
+    "@nuxt/eslint": "^0.3.13",
+    "@nuxt/image": "^1.7.0",
+    "@pinia/nuxt": "^0.5.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.isequal": "^4.5.0",
     "nuxt": "^3.12.4",
+    "nuxt-auth-utils": "^0.2.0",
+    "ufo": "^1.5.4",
     "vue": "latest"
   },
-  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
+  "devDependencies": {
+    "@nuxt/eslint-config": "^0.3.13",
+    "@nuxtjs/color-mode": "^3.4.2",
+    "@types/lodash.clonedeep": "^4.5.9",
+    "@types/lodash.isequal": "^4.5.8",
+    "@types/node": "^20.14.11",
+    "@unocss/nuxt": "^0.61.5",
+    "@unocss/preset-mini": "^0.61.5",
+    "eslint": "^9.7.0",
+    "typescript": "^5.5.3",
+    "vue-tsc": "^2.0.28"
+  }
 }
