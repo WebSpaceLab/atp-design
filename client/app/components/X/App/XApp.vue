@@ -9,8 +9,8 @@
 
 <template>
   <div
-    class="w-screen h-screen min-h-screen flex flex-col justify-start items-center !m-0 !p-0 !box-border overflow-x-hidden">
-    <div v-if="!loading" class="w-full h-full">
+    class="w-screen h-screen bg-background dark:bg-background-dark min-h-screen flex flex-col justify-start items-center !m-0 !p-0 !box-border overflow-x-hidden">
+    <div v-if="!loading" class="w-full h-full ">
       <slot />
     </div>
 

@@ -23,7 +23,10 @@ export default defineNuxtConfig({
     "@nuxt/content",
     "@nuxt/image",
     '@nuxtjs/color-mode',
-    "@nuxtjs/tailwindcss"
+    "@nuxtjs/tailwindcss",
+    "@nuxt/icon",
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
   ],
 
   runtimeConfig: {

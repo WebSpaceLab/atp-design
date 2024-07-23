@@ -1,88 +1,145 @@
-<script setup lang="ts">
+<script lang="ts" setup>
   defineProps({
-    text: {
+    color: {
       type: String,
-      default: 'Click'
-    },
-    link: {
-      type: Boolean,
-      default: false
-    },
-    to: {
-      type: String,
-      required: false,
-    },
-    rounded: {
-      type: Boolean,
-      default: false,
-    },
-    icon: {
-      type: Boolean,
-      default: false,
-    },
-    iconRight: {
-      type: Boolean,
-      default: false,
-    },
-    iconLeft: {
-      type: Boolean,
-      default: false,
-    },
-    type: {
-      type: String,
-      default: 'button'
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    position: {
-      type: String,
-      default: 'relative',
-    },
-    target: String,
-    ring: {
-      type: Boolean,
-      default: false
-    },
-    rel: String,
-    tooltip: Object,
-    strip: {
-      type: Boolean,
-      default: false
-    },
-    outline: {
-      type: Boolean,
-      default: false
-    },
-    basic: {
-      type: Boolean,
-      default: false
-    },
-    dashed: {
-      type: Boolean,
-      default: false
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    shadow: {
-      type: Boolean,
-      default: false
+      default: 'default',
     },
     size: {
       type: String,
-      default: 'md'
+      default: 'default',
     },
-    color: {
+    variant: {
       type: String,
-      default: ''
+      default: 'default',
     },
-  })
+    rounded: {
+      type: String,
+      default: 'default',
+    },
+    label: {
+      type: String,
+      default: '',
+    },
+    icon: {
+      type: String,
+      default: '',
+    },
+    iconPosition: {
+      type: String,
+      default: 'left',
+    },
+    type: {
+      type: String,
+      default: 'button',
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    square: {
+      type: Boolean,
+      default: false,
+    },
+    tooltip: Object,
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    shadow: {
+      type: Boolean,
+      default: false,
+    },
+    block: {
+      type: Boolean,
+      default: false,
+    },
+  });
 
   const ripple = ref(false);
-  const isTooltip = ref(false);
+
+  function setSize(s: string, sq: boolean, b: boolean) {
+    if (b) {
+      return {
+        'default': 'text-md font-semibold  w-full py-2',
+        'xs': 'text-xs font-semibold  w-full py-2',
+        'sm': 'text-sm font-semibold  w-full py-2',
+        'md': 'text-md font-semibold  w-full py-3',
+        'lg': 'text-lg font-semibold  w-full py-4',
+        'xl': 'text-xl font-semibold  w-full py-4',
+
+      }[s];
+    }
+
+    if (sq) {
+      return {
+        'default': 'text-base font-semibold w-9 h-9',
+        'xs': 'text-xs font-semibold w-7 h-7',
+        'sm': 'text-sm font-semibold w-8 h-8',
+        'md': 'text-md font-semibold w-9 h-9',
+        'lg': 'text-lg font-semibold w-11 h-11',
+        'xl': 'text-xl font-semibold w-12 h-12',
+      }[s];
+    }
+
+    return {
+      'default': 'text-base font-semibold py-2 px-4',
+      'xs': 'text-xs font-semibold py-1 px-2',
+      'sm': 'text-sm font-semibold py-1 px-2',
+      'md': 'text-md font-semibold py-1 px-3',
+      'lg': 'text-lg font-semibold py-2 px-4',
+      'xl': 'text-xl font-semibold py-2 px-4',
+    }[s];
+  }
+
+  function useSizeIcon(s: string) {
+    return {
+      'default': 'text-xl',
+      'xs': 'text-lg',
+      'sm': 'text-lg',
+      'md': 'text-xl',
+      'lg': 'text-2xl',
+      'xl': 'text-2xl',
+    }[s];
+  }
+
+  function setVariant(v: string, c: string, d: boolean) {
+    if (d) {
+      return 'cursor-not-allowed bg-slate-200 text-slate-400';
+    }
+
+    return {
+      'default': useColor(c),
+      'solid': useColor(c),
+      'outline': useColor(c + '-outline'),
+      'link': useColor(c + '-link'),
+      'ghost': useColor(c + '-ghost'),
+      'light': useColor(c + '-light'),
+    }[v];
+  }
+
+  function setRounded(r: string) {
+    return {
+      'default': 'rounded-md',
+      'none': 'rounded-none',
+      'sm': 'rounded-ms',
+      'md': 'rounded-md',
+      'lg': 'rounded-lg',
+      'xl': 'rounded-xl',
+      'full': 'rounded-full',
+    }[r];
+  }
+
+  function setIconPosition(params: type) {
+    return {
+      'default': 'flex-row',
+      'left': 'flex-row',
+      'right': 'flex-row-reverse',
+    }[params];
+  }
+
+  function setColorForRipple(c: string) {
+    return useColor(c + '-ripple');
+  }
 
   function rippleClick() {
     ripple.value = !ripple.value;
@@ -91,89 +148,51 @@
       ripple.value = !ripple.value;
     }, 300);
   }
-
-  watch(() => isTooltip.value, () => {
-    setTimeout(() => {
-      isTooltip.value = false
-    }, 3000);
-  })
 </script>
 
 <template>
   <button
-    class="relative transition duration-150 ease-out font-bold cursor-pointer tracking-wider focus:ring-focus box-border"
+    class="flex justify-center items-center relative transition duration-150 ease-out tracking-wider focus:ring-focus overflow-hidden"
     :class="[
-      color !== '' && !strip ? disabled ? 'btn-disabled' : `btn-${color}` : '',
-      basic ? 'hover:bg-hover-800 hover:text-hover-400 hover:border-hover-800' : '',
-      shadow ? 'shadow-lg' : '',
-      dashed ? 'border-dashed' : '',
-      ring ? 'rounded-full' : '',
-      strip ?
-        color !== '' ? `border-none bg-transparent btn-${color}-text` : 'border-none bg-transparent hover:text-hover-400'
-        : '',
-      icon ? `btn-size-${size}` : 'px-4 py-2',
-      rounded ? `rounded-lg` : '',
-      position ? position : '',
-      ripple ? 'overflow-hidden' : '',
-    ]" :type="type" :disabled="disabled" @click="rippleClick" @mouseover="isTooltip = true"
-    @mouseleave="isTooltip = false">
-    <ClientOnly>
-      <NuxtLink v-if="link" class="no-underline bg-transparent text-inherit flex justify-center items-center" :to="to"
-        :rel="rel" :target="target">
-        <span :class="ripple ? color !== '' ? `btn-ripple btn-ripple-${color}` : 'btn-ripple bg-white/70' : ''" />
+      setVariant(variant, color, disabled),
+      setSize(size, square, block),
+      { 'shadow shadow-slate-600': shadow },
+      setRounded(rounded),
+      setIconPosition(iconPosition),
+    ]" :type="type" @click="rippleClick">
+    <span v-if="ripple" class="btn-ripple" :class="setColorForRipple(color)" />
 
-        <span v-if="icon">
-          <slot :name="icon ? 'icon' : false" />
-        </span>
+    <Icon v-if="!loading" :name="icon" :class="[
+      useSizeIcon(size),
+      { 'mr-2': iconPosition === 'left' && !square },
+      { 'ml-2': iconPosition === 'right' && !square },
+    ]" />
 
-        <span v-else class="flex justify-center items-center space-x-2">
-          <span v-if="iconLeft">
-            <slot name="icon-left" />
-          </span>
+    <Icon v-else name="eos-icons:bubble-loading" :class="[
+      useSizeIcon(size),
+      { 'mr-2': iconPosition === 'left' && !square },
+      { 'ml-2': iconPosition === 'right' && !square },
+    ]" />
 
-          <span>
-            <slot>{{ text }}</slot>
-          </span>
 
-          <Icon v-if="loading" name="eos-icons:bubble-loading" />
-
-          <span v-if="iconRight">
-            <slot name="icon-right" />
-          </span>
-        </span>
-      </NuxtLink>
-
-      <div v-else>
-        <span :class="ripple ? color !== '' ? `btn-ripple btn-ripple-${color}` : 'btn-ripple bg-white/70' : ''" />
-
-        <span v-if="icon && ring">
-          <slot :name="icon ? 'icon' : false" />
-        </span>
-
-        <span v-else class="flex justify-center items-center space-x-2">
-          <span v-if="iconLeft">
-            <slot name="icon-left" />
-          </span>
-
-          <span>
-            <slot>{{ text }}</slot>
-          </span>
-
-          <Icon v-if="loading" name="eos-icons:bubble-loading" />
-
-          <span v-if="iconRight">
-            <slot name="icon-right" />
-          </span>
-        </span>
-      </div>
-
-      <x-tooltip v-if="tooltip && isTooltip" :position="tooltip.position" :text="tooltip.text"
-        class="text-xs text-slate-300 w-max" />
-    </ClientOnly>
+    <slot v-if="!square">{{ label }}</slot>
   </button>
 </template>
 
 <style scoped>
+  .btn-ripple {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 50%;
+    animation: ripple-btn 0.3s linear infinite;
+    z-index: 7;
+    top: 50%;
+    left: 50%;
+  }
+
   @keyframes ripple-btn {
     0% {
       width: 0;
