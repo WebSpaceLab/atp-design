@@ -14,13 +14,13 @@
 
 <template>
   <div>
-    <XLink v-if="!link.children" :to="link.to" @click="closeMobile">
+    <XLink v-if="!link.children" :to="link.to" color="primary-link" @click="closeMobile">
       {{ link.label }}
     </XLink>
 
     <div v-else class="relative duration-300" @mouseenter="open = true" @mouseleave="open = false">
       <div class="flex items-center space-x-2">
-        <XLink :to="link.to" active-class="text-primary" @click="closeMobile">
+        <XLink :to="link.to" @click="closeMobile">
           {{ link.label }}
         </XLink>
 

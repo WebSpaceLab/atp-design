@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-  const { clear } = useAuthStore()
-  const toasts = useToast()
+  // const { clear } = useAuthStore()
+  // const toasts = useToast()
 
   const logout = async () => {
-    await clear()
+    // await clear()
 
-    navigateTo('/', { replace: true })
-    toasts.add({
-      title: 'Logout',
-      description: 'You have been logged out.',
-      color: 'primary'
-    })
+    // navigateTo('/', { replace: true })
+    // toasts.add({
+    //   title: 'Logout',
+    //   description: 'You have been logged out.',
+    //   color: 'primary'
+    // })
   }
 </script>
 

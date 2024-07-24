@@ -18,19 +18,14 @@
     },
     label: {
       type: String,
-      default: '',
     },
     icon: {
-      type: String,
-      default: '',
+      type: String || null,
+      default: null
     },
     iconPosition: {
       type: String,
       default: 'left',
-    },
-    type: {
-      type: String,
-      default: 'button',
     },
     loading: {
       type: Boolean,
@@ -40,7 +35,6 @@
       type: Boolean,
       default: false,
     },
-    tooltip: Object,
     disabled: {
       type: Boolean,
       default: false,
@@ -52,6 +46,14 @@
     block: {
       type: Boolean,
       default: false,
+    },
+    type: {
+      type: String,
+      default: 'button',
+      validator: function(value: string) {
+        // The value must match one of these strings
+        return ['button', 'submit', 'reset'].indexOf(value) !== -1;
+      }
     },
   });
 
@@ -129,7 +131,7 @@
     }[r];
   }
 
-  function setIconPosition(params: type) {
+  function setIconPosition(params: string) {
     return {
       'default': 'flex-row',
       'left': 'flex-row',
@@ -159,23 +161,35 @@
       { 'shadow shadow-slate-600': shadow },
       setRounded(rounded),
       setIconPosition(iconPosition),
-    ]" :type="type" @click="rippleClick">
+    ]" 
+    :type="type as 'button' | 'submit' | 'reset'"
+    :disabled="disabled"
+    @click="rippleClick"
+  >
     <span v-if="ripple" class="btn-ripple" :class="setColorForRipple(color)" />
+<!--
+-->
+    <Icon 
+      v-if="!loading && icon" 
+      :name="icon" 
+      :class="[
+        useSizeIcon(size),
+        { 'mr-2': iconPosition === 'left' && !square },
+        { 'ml-2': iconPosition === 'right' && !square },
+      ]" 
+    />
 
-    <Icon v-if="!loading" :name="icon" :class="[
-      useSizeIcon(size),
-      { 'mr-2': iconPosition === 'left' && !square },
-      { 'ml-2': iconPosition === 'right' && !square },
-    ]" />
+    <Icon 
+      v-else 
+      name="eos-icons:bubble-loading" 
+      :class="[
+        useSizeIcon(size),
+        { 'mr-2': iconPosition === 'left' && !square },
+        { 'ml-2': iconPosition === 'right' && !square },
+      ]"
+     />
 
-    <Icon v-else name="eos-icons:bubble-loading" :class="[
-      useSizeIcon(size),
-      { 'mr-2': iconPosition === 'left' && !square },
-      { 'ml-2': iconPosition === 'right' && !square },
-    ]" />
-
-
-    <slot v-if="!square">{{ label }}</slot>
+     <slot v-if="!square">{{ label }}</slot>
   </button>
 </template>
 

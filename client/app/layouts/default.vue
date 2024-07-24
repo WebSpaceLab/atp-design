@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  const { toggleLoginModal, toggleRegisterModal } = useUseAuthTools()
+
   const links = ref([
     {
       label: 'Home',
@@ -54,14 +56,14 @@
 
         <template #action>
           <div class="flex space-x-3">
-            <XTooltip text="Login">
+            <XTooltip  text="Login">
               <XBtn variant="ghost" color="primary" icon="i-line-md-person-filled" square
-                @click="$auth.toggleLoginModal(true)" />
+                @click="toggleLoginModal(true)" />
             </XTooltip>
 
             <XTooltip text="Register">
               <XBtn variant="ghost" color="primary" icon="i-line-md-person-add-filled"" square @click="
-                $auth.toggleRegisterModal(true)" />
+                toggleRegisterModal(true)" />
             </XTooltip>
           </div>
 

@@ -1,44 +1,46 @@
-api/.phpunit.cache
-api/node_modules
-api/public/build
-api/public/hot
-api/public/storage
-api/storage/*.key
-api/vendor
-api/.env
-api/.env.backup
-api/.env.production
-api/.phpactor.json
-api/.phpunit.result.cache
-api/Homestead.json
-api/Homestead.yaml
-api/auth.json
-api/npm-debug.log
-api/yarn-error.log
-api/.fleet
-api/.idea
-api/.vscode
+**/.phpunit.cache
+**/node_modules
+**/public/build
+**/public/hot
+**/public/storage
+**/storage/*.key
+**/vendor
+**/.env
+**/.env.backup
+**/.env.production
+**/.phpactor.json
+**/.phpunit.result.cache
+**/Homestead.json
+**/Homestead.yaml
+**/auth.json
+**/npm-debug.log
+**/yarn-error.log
+**/.fleet
+**/.idea
+**/.vscode
 # Nuxt dev/build outputs
-client/.output
-client/.data
-client/.nuxt
-client/.nitro
-client/.cache
-client/dist
-
+**/.output
+**/.data
+**/.nuxt
+**/.nitro
+**/.cache
+**/dist
 # Node dependencies
-client/node_modules
+
 
 # Logs
-client/logs
-client/*.log
+**/logs
+**/*.log
 
 # Misc
-client/.DS_Store
-client/.fleet
-client/.idea
+**/.DS_Store
+**/.fleet
+**/.idea
 
 # Local env files
-client/.env
-client/.env.*
-client/!.env.example
+**/.env
+**/.env.*
+**/!.env.example
+
+.git/
+**/node_modules/

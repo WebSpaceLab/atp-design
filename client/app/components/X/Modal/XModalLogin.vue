@@ -1,25 +1,25 @@
 <script lang="ts" setup>
-
-
+ const { state, closeLoginModal, toggleLoginModal,toggleRegisterToLogin } = useUseAuthTools()
 </script>
 
 <template>
-  <XModal :show="$auth.modal.isShowLogin" :closeable="true" :overflow-hidden="false"
-    @close="(event) => $auth.toggleLoginModal(event)">
+  <XModal :show="state.isShowLogin" :closeable="true" :overflow-hidden="false"
+    @close="(event) => toggleLoginModal(event)">
     <div class="w-120 relative flex flex-col justify-center pt-16 px-8 pb-8">
       <div class="absolute top-2 right-2">
-        <XBtnCloseToOpen :switcher="$auth.modal.isShowLogin" @click="$auth.closeLoginModal()" />
+        <XBtnCloseToOpen :switcher="state.isShowLogin" @click="closeLoginModal()" />
       </div>
 
       <div class="text-center pb-8">
         <Icon name="i-line-md-person-filled" class="text-7xl text-center text-primary" />
-        <h2 class="text-center text-3xl font-semibold">Welcome back!</h2>
+        
+        <h2 class="text-primary-900 dark:text-primary-100 text-center text-3xl font-semibold">Welcome back!</h2>
 
-        <div class="flex justify-center items-center">
+        <div class="text-basic-900 dark:text-basic-400 flex justify-center items-center">
 
           <p>Don't have an account?</p>
 
-          <XBtn variant="link" label="Sign Up" @click="$auth.toggleRegisterToLogin()" />
+          <XBtn variant="link" label="Sign Up" @click="toggleRegisterToLogin()" />
         </div>
       </div>
       <!--
