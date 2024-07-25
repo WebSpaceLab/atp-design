@@ -9,22 +9,59 @@
       type: Boolean,
       default: false,
     },
+    
+    links: {
+      type: Array,
+      default: () => [],
+    },
   })
 
-  const { navbar, toggleMobile, handleScroll } = useNavbar()
+  const isOpen = ref(false)
+  const isMobile = ref(false)
+  const isScroll = ref(false)
 
-  function scrollNavbar() {
-    handleScroll('main-nav')
+  const toggleNavbar = () => {
+    isOpen.value = !isOpen.value
   }
 
+  const closeNavbar = () => {
+    isOpen.value = false
+  }
+
+  const toggleMobile = () => {
+    isMobile.value = !isMobile.value
+  }
+
+  const closeMobile = (event: boolean) => {
+    isMobile.value = event
+  }
+
+  const toggleScroll = (toggle: boolean) => {
+    isScroll.value = toggle
+  }
+
+  const handleScroll = (navId: string) => {
+    const nav = document.getElementById(navId)
+    if (nav) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > nav!.scrollTop) {
+          toggleScroll(true)
+        } else {
+          toggleScroll(false)
+        }
+      })
+    }
+  }
+
+
   onMounted(() => {
-    scrollNavbar()
+    handleScroll('main-nav')
   });
 </script>
 
 <template>
   <nav id="main-nav" class="w-screen backdrop-blur shadow-lg shadow-black box-border" :class="[
-    navbar.isScroll
+    isScroll
       ? 'fixed h-20 top-0 left-0'
       : 'relative h-20 lg:h-30'
   ]">
@@ -40,15 +77,15 @@
 
       <div class="lg:hidden absolute z-10 top-6 left-0 px-3">
         <XTooltip text="Otwórz menu" :popper="{ placement: 'right' }">
-          <XBtnCloseToOpen variant="outline" :switcher="navbar.isMobile" @click="toggleMobile" />
+          <XBtnCloseToOpen variant="outline" :switcher="isMobile" @click=" toggleMobile()" />
         </XTooltip>
       </div>
 
       <div class="w-full hidden lg:block">
-        <div class="relative w-full flex justify-between items-center" :class="navbar.isMobile || navbar.isScroll ? 'show-content' : 'hidden-content'
+        <div class="relative w-full flex justify-between items-center" :class="isMobile || isScroll ? 'show-content' : 'hidden-content'
           ">
           <div class="flex w-full mx-auto container h-20 justify-center items-center space-x-10 pr-10">
-            <slot name="menu" />
+            <XNavbarMenu :links="links"/>
           </div>
 
           <div class="w-auto flex justify-end pr-3 space-x-3">
@@ -90,10 +127,15 @@
     </div>
 
     <!-- Mobile Menu -->
-    <transition enter-active-class="transition ease-out duration-500" enter-from-class="transform translate-x-[-100%]"
-      enter-to-class="transform translate-x-0" leave-active-class="transition ease-in duration-500"
-      leave-from-class="transform translate-x-0" leave-to-class="transform translate-x-[-100%]">
-      <div v-if="navbar.isMobile"
+    <transition 
+      enter-active-class="transition ease-out duration-500" 
+      enter-from-class="transform translate-x-[-100%]"
+      enter-to-class="transform translate-x-0" 
+      leave-active-class="transition ease-in duration-500"
+      leave-from-class="transform translate-x-0" 
+      leave-to-class="transform translate-x-[-100%]"
+    >
+      <div v-if="isMobile"
         class="h-screen w-full fixed top-0 left-0 lg:hidden z-60 bg-white dark:bg-slate-900 box-border">
         <div class="w-full h-full relative flex flex-col justify-center items-center">
 
@@ -104,7 +146,7 @@
             </div>
 
             <div class="w-full h-full flex flex-col justify-start items-center space-y-3 pt-20">
-              <slot name="menu" />
+              <XNavbarMenu :links="links" @close-mobile="closeMobile" />
 
               <div>
                 <slot name="action" />

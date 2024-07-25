@@ -1,23 +1,20 @@
 <script lang="ts" setup>
-  const color = ref('red');
-  function classColor(c: string) {
-    return {
-      "red": "text-red-800",
-    }[c];
-  }
-
-  definePageMeta({
-    layout: "default",
-  });
+  // definePageMeta({
+  //   layout: "default",
+  // })
+  const api = useApi()
+  const data =await api.get('/api/app')
+// onMounted(async () => {
+//  await useAppStore().start()
+//   // console.log(data)
+// {{ useAppStore().data }}
+// <pre class="text-lg font-bold " >
+// </pre>
+// })
 </script>
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold underline" :class="[classColor(color)]">
-      Hello world!
-    </h1>
-
-    <x-btn color="primary" size="md" variant="outline" rounded="md" icon="i-heroicons-pencil-square"
-      icon-position="right">Baton</x-btn>
+    :: {{ data }}
   </div>
 </template>

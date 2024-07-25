@@ -92,9 +92,14 @@
           </div>
         </transition>
 
-        <transition enter-active-class="transition ease-in duration-500" enter-from-class="transform -translate-x-100"
-          enter-to-class="transform translate-x-0" leave-active-class="transition ease-in duration-100"
-          leave-from-class="transform translate-x-0" leave-to-class="transform translate-x-100">
+        <transition
+          enter-active-class="transition ease-in duration-700"
+          enter-from-class="transform translate-y-[-300%]"
+          enter-to-class="transform translate-x-0"
+          leave-active-class="transition ease-in duration-700"
+          leave-from-class="transform translate-x-0"
+          leave-to-class="transform translate-y-[300%]"
+        >
           <div v-show="show"
             class=" bg-background-light dark:bg-background-dark m-4 shadow-xl shadow-black transform transition-all sm:mx-auto z-50 border-solid border-1 border-gray-300 dark:border-gray-700 rounded-lg"
             :class="[

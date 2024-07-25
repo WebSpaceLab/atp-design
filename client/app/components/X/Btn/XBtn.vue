@@ -20,8 +20,8 @@
       type: String,
     },
     icon: {
-      type: String || null,
-      default: null
+      type: String,
+      default: ''
     },
     iconPosition: {
       type: String,
@@ -167,10 +167,9 @@
     @click="rippleClick"
   >
     <span v-if="ripple" class="btn-ripple" :class="setColorForRipple(color)" />
-<!--
--->
+    <!-- @vue-ignore -->
     <Icon 
-      v-if="!loading && icon" 
+      v-if="!loading || icon !== ''" 
       :name="icon" 
       :class="[
         useSizeIcon(size),
@@ -178,7 +177,8 @@
         { 'ml-2': iconPosition === 'right' && !square },
       ]" 
     />
-
+    
+    <!-- @vue-ignore -->
     <Icon 
       v-else 
       name="eos-icons:bubble-loading" 

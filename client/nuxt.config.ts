@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: '2024-07-24',
   future: { compatibilityVersion: 4 },
 
   devtools: {
@@ -12,14 +12,16 @@ export default defineNuxtConfig({
     vscode: {},
   },
 
+  ssr: false,
+
   experimental: {
     componentIslands: true,
     typedPages: true,
   },
+
   modules: [
     "@nuxt/eslint",
-    "nuxt-auth-utils",
-    '@pinia/nuxt',
+    // "nuxt-auth-utils",
     "@nuxt/content",
     "@nuxt/image",
     '@nuxtjs/color-mode',
@@ -30,6 +32,7 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
+    proxyUrl: process.env.NUXT_PUBLIC_PROXY_URL,
     public: {
       clientUrl: process.env.NUXT_PUBLIC_CLIENT_URL,
       apiUrl: process.env.NUXT_PUBLIC_API_URL,
@@ -55,5 +58,29 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+
+  // imports: {
+  //   dirs: [
+  //     'stores',
+  //     'stores/**',
+  //     'plugins',
+  //     'plugins/**',
+  //     'composables',
+  //     'composables/*/index.{ts,js,mjs,mts}',
+  //     'composables/**'
+  //   ]
+  // },
+
+  // nitro: {
+  //   prerender: {
+  //     crawlLinks: true,
+  //     failOnError: false,
+  //   },
+  //   //   routeRules: {
+  //   //     '/api/**': {
+  //   //       proxy: "https://127.0.0.1:8000/**"
+  //   //     }
+  //   //   }
+  // },
 
 })

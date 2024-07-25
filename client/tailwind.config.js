@@ -5,15 +5,13 @@ export default {
     "./layouts/**/*.vue",
     "./pages/**/*.vue",
     "./plugins/**/*.{js,ts}",
-    "./app.vue",
-    "./error.vue",
   ],
   theme: {
     extend: {
       colors: {
         basic: {
           dark: '#f8fafc',
-          DEFAULT: '#f8fafc',
+          DEFAULT: '#020617',
           light: '#020617',
           50: '#f8fafc',
           100: '#f1f5f9',

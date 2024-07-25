@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-  const { toggleLoginModal, toggleRegisterModal } = useUseAuthTools()
-
   const links = ref([
     {
       label: 'Home',
@@ -45,26 +43,14 @@
 <template>
   <XLayout>
     <template #header>
-      <XNavbar container>
+      <XNavbar :links="links" container>
         <template #logo>
           <XLogo />
         </template>
 
-        <template #menu>
-          <XNavbarMenu :links="links" />
-        </template>
-
         <template #action>
           <div class="flex space-x-3">
-            <XTooltip  text="Login">
-              <XBtn variant="ghost" color="primary" icon="i-line-md-person-filled" square
-                @click="toggleLoginModal(true)" />
-            </XTooltip>
-
-            <XTooltip text="Register">
-              <XBtn variant="ghost" color="primary" icon="i-line-md-person-add-filled"" square @click="
-                toggleRegisterModal(true)" />
-            </XTooltip>
+            <XModalAuth />
           </div>
 
           <!-- Auth buttons 
@@ -79,18 +65,7 @@
     </template>
 
     <template #footer>
-      <p class="text-gray-500 dark:text-gray-400 text-sm">
-        Copyright © 2024-{{ new Date().getFullYear() }} ATP - <NuxtLink class="hover:underline"
-          to="https://github.com/nuxt/nuxt/blob/main/LICENSE" target="_blank">
-          MIT License
-        </NuxtLink>
-      </p>
-    </template>
 
-    <template #addons>
-      <XModalRegister />
-
-      <XModalLogin />
     </template>
   </XLayout>
 </template>

@@ -5,6 +5,12 @@ defineProps({
     required: true,
   }
 });
+
+const emit = defineEmits(['closeMobile'])
+
+const closeMobile = (event: boolean) => {
+  emit('closeMobile', event )
+}
 </script>
 
 <template>
@@ -12,6 +18,7 @@ defineProps({
     <template v-for="(link, index) in links" :key="index">
       <XNavbarMenuItem v-if="link"
         :link="link"
+        @close-mobile="closeMobile"
       />
     </template>
   </div>

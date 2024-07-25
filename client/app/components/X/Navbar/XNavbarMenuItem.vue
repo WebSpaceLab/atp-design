@@ -7,26 +7,26 @@
 
   })
 
-  const { closeMobile } = useNavbar()
+  const emits = defineEmits(['closeMobile'])
 
   const open = ref(false)
+
+  const closeMobile = () => {
+    emits('closeMobile', false)
+  }
 </script>
 
 <template>
   <div>
-    <XLink v-if="!link.children" :to="link.to" color="primary-link" @click="closeMobile">
+    <XLink v-if="!link.children" :to="link.to" color="primary-link" @click="closeMobile()">
       {{ link.label }}
     </XLink>
 
     <div v-else class="relative duration-300" @mouseenter="open = true" @mouseleave="open = false">
       <div class="flex items-center space-x-2">
-        <XLink :to="link.to" @click="closeMobile">
+        <XLink>
           {{ link.label }}
         </XLink>
-
-        <Icon v-if="link.children" :class="open ? 'rotate-90 ' : 'rotate-0'"
-          class="text-gray-500 dark:text-gray-400 transform duration-300" name="heroicons-solid:chevron-right"
-          @click="open = !open" />
       </div>
 
       <transition enter-active-class="transition ease-out duration-300"
