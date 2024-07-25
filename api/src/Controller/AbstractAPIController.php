@@ -19,7 +19,7 @@ abstract class AbstractAPIController extends AbstractController
     protected ValidatorInterface $validator;
     protected $flashBag;
 
-    public function res( mixed $data, array $groups = [], int $status = 200, array $headers = []): JsonResponse
+    public function api( mixed $data, array $groups = [], int $status = 200, array $headers = []): JsonResponse
     {
         $context = [
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) {
@@ -58,11 +58,11 @@ abstract class AbstractAPIController extends AbstractController
         );
     }
 
-    public function redirectToFrontendRoute(string $routeName, int $status = 302)
+    public function redirectToClientRoute(string $routeName, int $status = 302)
     {
-        $frontendUrl = $_ENV['FRONTEND_URL'];
+        $clientUrl = $_ENV['CLIENT_URL'];
         // $url = $this->generateUrl($routeName);
-        $fullUrl = $frontendUrl . $routeName;
+        $fullUrl = $clientUrl . $routeName;
     
         return $this->redirect($fullUrl, $status);
     }

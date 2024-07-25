@@ -6,7 +6,7 @@ export function useFetchApi(path: string, options: any = { headers: {} }) {
   let headers: any = {
     accept: "application/json",
     "Content-Type": "application/json",
-    referer: config.public.clientUrl,
+    referer: config.public.appUrl,
   }
 
   if (token && token.value !== null) {

@@ -8,11 +8,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class App extends AbstractAPIController
 {
-    #[Route('/api/app', name: 'api:app:index', methods: ['GET'])]
+    #[Route('/api/app', name: 'app.index', methods: ['GET'])]
     public function index(): JsonResponse
     {
         
-        return $this->res([
+        return $this->api([
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/App.php',
         ]);

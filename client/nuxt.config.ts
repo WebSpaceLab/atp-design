@@ -34,7 +34,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     proxyUrl: process.env.NUXT_PUBLIC_PROXY_URL,
     public: {
-      clientUrl: process.env.NUXT_PUBLIC_CLIENT_URL,
+      appUrl: process.env.NUXT_PUBLIC_APP_URL,
       apiUrl: process.env.NUXT_PUBLIC_API_URL,
     },
   },
