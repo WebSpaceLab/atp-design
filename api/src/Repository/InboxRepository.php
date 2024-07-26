@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Inbox;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;
@@ -22,34 +22,33 @@ class InboxRepository extends ServiceEntityRepository
         parent::__construct($registry, Inbox::class);
     }
 
-// TODO: Carbon
-    // public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $read = 'false'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('inbox')
-    //         ->andWhere('inbox.isDelete = false');
+    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $read = 'false'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('inbox')
+            ->andWhere('inbox.isDelete = false');
 
-    //     if ($term) {
-    //         $qb->andWhere('inbox.subject LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+        if ($term) {
+            $qb->andWhere('inbox.subject LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($read) {
-    //         $qb->andWhere('inbox.isRead LIKE :read')
-    //             ->setParameter('read', $read);
-    //     }
+        if($read) {
+            $qb->andWhere('inbox.isRead LIKE :read')
+                ->setParameter('read', $read);
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('inbox.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('inbox.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
         
 
-    //     return $qb->orderBy('inbox.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('inbox.' . $orderBy , $orderDir);
+    }
 
     public function getActiveIsRead()
     {

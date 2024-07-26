@@ -72,15 +72,15 @@ export default defineNuxtConfig({
   // },
 
   // nitro: {
-  //   prerender: {
-  //     crawlLinks: true,
-  //     failOnError: false,
-  //   },
-  //   //   routeRules: {
-  //   //     '/api/**': {
-  //   //       proxy: "https://127.0.0.1:8000/**"
-  //   //     }
-  //   //   }
+  //   // prerender: {
+  //   //   crawlLinks: true,
+  //   //   failOnError: false,
+  //   // },
+  //   routeRules: {
+  //     '/api/**': {
+  //       proxy: "https://127.0.0.1:8000/**"
+  //     }
+  //   }
   // },
 
 })

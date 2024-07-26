@@ -8,6 +8,7 @@ use App\Entity\VerificationToken;
 use App\Repository\UserRepository;
 use App\Repository\VerificationTokenRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,11 +17,6 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\EqualTo;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractAPIController
@@ -31,86 +27,76 @@ class RegistrationController extends AbstractAPIController
     ) {}
 
     #[Route('/api/auth/register', name: 'auth.register', methods: ['POST'])]
-    public function register(Request $request, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository): Response
+    public function register(Request $request, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, UserRepository $userRepository): JsonResponse
     {
-        $data = $request->toArray();
+        $req = $request->toArray();
 
-
-        $constraints = new Assert\Collection([
-            'username' => [
-                new NotBlank(),
-                new Length(['min' => 2, 'minMessage' => 'Nazwa musi składać się z przynajmniej 2 liter.']),
-            ],
-
-            'email' => [
-                new NotBlank(),
-                new Email()
-            ],
-            'password' => [
-                new NotBlank(),
-                new Length(['min' => 8, 'minMessage' => 'Hasło musi składać się z przynajmniej 8 liter.']),
-            ],
-            'password_confirmation' => [
-                new NotBlank(),
-                new Length(['min' => 8]),
-                new EqualTo(['value' => $data['password'], 'message' => 'Hasła nie są zgodne.']),
-            ],
-            'isAgree' => [
-                new NotBlank(['message' => 'Wymagana jest zgoda.']),
-            ]
-        ]);
-
-        $violations = $validator->validate($data, $constraints);
-
-        if (count($violations) > 0) {
-            $errors = [];
-            foreach ($violations as $violation) {
-                $propertyPath = trim($violation->getPropertyPath(), '[\]');
-                $errors[$propertyPath] = $violation->getMessage();
-            }
-
-            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
-        }
-
-        
-        $user = $userRepository->findOneBy(['username' => $data['username']]);
-
+        // Sprawdzenie czy użytkownik o podanej nazwie i emailu użytkownika już istnieje
+        $user = $userRepository->findOneBy(['username' => $req['username']]);
         if($user) {
             return $this->json(['errors' => [
-                'username' => 'Urzytkownik o tej nzwie już istnieje'
-            ]], Response::HTTP_BAD_REQUEST);
+                'username' => 'A user with this username already exists'
+            ]],  Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        $user = $userRepository->findOneBy(['email' => $data['email']]);
-
+        
+        $user = $userRepository->findOneBy(['email' => $req['email']]);
         if($user) {
             if(!$user->getVerificationToken()->isIsVerified()) {
                 return $this->json(['errors' => [
-                    'email' => 'Użytkownik o podanym emilu już istnieje.Jak dotąd rejstarcja, nie została potwierdzona. Sprawdź maila.'
-                ]], Response::HTTP_BAD_REQUEST);
+                    'email' => 'A user with this email already exists. Registration has not been confirmed yet. Please check your email.'
+                ]], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             return $this->json(['errors' => [
-                'email' => 'Użytkownik o podanym emilu już istnieje.'
-            ]], Response::HTTP_BAD_REQUEST);
+                'email' => 'A user with this email already exists.'
+            ]], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        if(strlen($req['password']) < 6) {
+            return $this->json(['errors' => [
+                'password' => 'The password must be at least 6 characters long.'
+            ]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if(strlen($req['password']) > 20) {
+            return $this->json(['errors' => [
+                'password' => 'The password must be at most 20 characters long.'
+            ]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if($req['password'] !== $req['password_confirmation']) {
+            return $this->json(['errors' => [
+                'password_confirmation' => 'The password confirmation does not match.'
+            ]], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Utworzenie nowego użytkownika
         $user = new User();
-        $user->setUsername($data['username']);
-        $user->setEmail($data['email']);
-        $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
+        $user->setUsername($req['username']);
+        $user->setEmail($req['email']);
+        $user->setPassword($passwordHasher->hashPassword($user, $req['password']));
         $user->setIsActiveAccount(false);
-        $user->setIsAgree($data['isAgree']);
+        $user->setIsAgree($req['isAgree']);
+        $user->setRoles(['ROLE_USER']);
 
-        $userRepository->save($user, true);
+        // Walidacja danych
+        $violations = $validator->validate($user, null, ['register']);
 
-        // Wygenerowanie tokenu weryfikacyjnego
+        if (count($violations) > 0) {
+            $errors = $this->formatValidationErrors($violations);
+            
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        
+        // // Wygenerowanie tokenu weryfikacyjnego
         $verificationToken = $this->generateVerificationToken($user);
 
-        // Wysłanie maila weryfikacyjnego
+        // // Wysłanie maila weryfikacyjnego
         $this->sendVerificationEmail($user->getEmail(), $verificationToken, $user);
 
-        return $this->json(['message' => 'Rejestracja zakończona sukcesem. Sprawdź swoją skrzynkę mailową w celu weryfikacji.'], 201);
+        $this->flash('Registration completed successfully. Check your email inbox for verification.');
+
+        return $this->api([], [], 201);
     }
 
     private function generateVerificationToken(User $user): string
@@ -132,14 +118,14 @@ class RegistrationController extends AbstractAPIController
     private function sendVerificationEmail(string $email, string $verificationToken, User $user): void
     {
         $url = $this->generateUrl('verify.email', ['token' => $verificationToken], UrlGeneratorInterface::ABSOLUTE_URL);
-
+   
         $email = (new TemplatedEmail())
-            ->from(new Address('noreply@example.com', 'Miasto Suwałki'))
+            ->from(new Address('noreply@example.com', 'Atp'))
             ->to(new Address($email, $user->getUsername()))
             ->subject('Potwierdzenie adresu email')
             ->htmlTemplate('email/verification-email.html.twig')
             ->context([
-                'user' => $user,
+                'name' => $user->getUsername(),
                 'url' => $url
             ]);
 

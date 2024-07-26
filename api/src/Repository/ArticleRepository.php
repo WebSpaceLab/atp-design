@@ -23,83 +23,83 @@ class ArticleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Article::class);
     }
-// TODO Carbon
-    // public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('article')
-    //         ->andWhere('article.isDelete = false');
 
-    //     if ($term) {
-    //         $qb->andWhere('article.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('article')
+            ->andWhere('article.isDelete = false');
 
-    //     if($status) {
-    //         $qb->andWhere('article.isPublished LIKE :status')
-    //             ->setParameter('status', $status);
-    //     }
+        if ($term) {
+            $qb->andWhere('article.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($status) {
+            $qb->andWhere('article.isPublished LIKE :status')
+                ->setParameter('status', $status);
+        }
+
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('article.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('article.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('article.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('article.' . $orderBy , $orderDir);
+    }
 
-    // public function getWithSearchQueryBuilderOnlyPublished(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('article')
-    //         ->andWhere('article.isDelete = false')
-    //         ->andWhere('article.isPublished = true');
+    public function getWithSearchQueryBuilderOnlyPublished(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('article')
+            ->andWhere('article.isDelete = false')
+            ->andWhere('article.isPublished = true');
 
-    //     if ($term) {
-    //         $qb->andWhere('article.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+        if ($term) {
+            $qb->andWhere('article.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('article.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('article.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('article.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('article.' . $orderBy , $orderDir);
+    }
 
-    // public function getWithSearchQueryBuilderOnlyPublishedForCategory(Category $category, ?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('article')
-    //         ->andWhere('article.isDelete = false')
-    //         ->andWhere('article.isPublished = true')
-    //         ->innerJoin('article.category', 'category')
-    //         ->addSelect('category')
-    //         ->andWhere('category = :category')
-    //         ->setParameter('category', $category);
+    public function getWithSearchQueryBuilderOnlyPublishedForCategory(Category $category, ?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('article')
+            ->andWhere('article.isDelete = false')
+            ->andWhere('article.isPublished = true')
+            ->innerJoin('article.category', 'category')
+            ->addSelect('category')
+            ->andWhere('category = :category')
+            ->setParameter('category', $category);
 
-    //     if ($term) {
-    //         $qb->andWhere('article.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+        if ($term) {
+            $qb->andWhere('article.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('article.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('article.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('article.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('article.' . $orderBy , $orderDir);
+    }
 
     public function getPublishedArticle()
     {

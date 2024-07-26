@@ -2,8 +2,15 @@ framework:
     validation:
         # Enables validator auto-mapping support.
         # For instance, basic validation constraints will be inferred from Doctrine's metadata.
-        #auto_mapping:
-        #    App\Entity\: []
+        # auto_mapping:
+        #     # App\Entity\: []
+        #     App\Entity\User:
+        #         properties:
+        #             email:
+        #                 - Email: { groups: [register] }
+        #             password:
+        #                 - NotBlank: { groups: [register] }
+        #                 - Length: { min: 7, groups: [register] }
 
 when@test:
     framework:

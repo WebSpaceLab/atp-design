@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Category;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,33 +22,33 @@ class CategoryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Category::class);
     }
-// TODO Carbon
-    // public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('category')
-    //         ->andWhere('category.isDelete = false');
 
-    //     if ($term) {
-    //         $qb->andWhere('category.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('category')
+            ->andWhere('category.isDelete = false');
 
-    //     if($status) {
-    //         $qb->andWhere('category.isPublished LIKE :status')
-    //             ->setParameter('status', $status);
-    //     }
+        if ($term) {
+            $qb->andWhere('category.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($status) {
+            $qb->andWhere('category.isPublished LIKE :status')
+                ->setParameter('status', $status);
+        }
+
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('category.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('category.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('category.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('category.' . $orderBy , $orderDir);
+    }
 
     public function getActiveCategories()
     {

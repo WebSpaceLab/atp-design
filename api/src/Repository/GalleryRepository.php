@@ -23,56 +23,56 @@ class GalleryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Gallery::class);
     }
-// TODO Carbon
-    // public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('gallery')
-    //         ->andWhere('gallery.isDelete = false');
 
-    //     if ($term) {
-    //         $qb->andWhere('gallery.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $status = 'false'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('gallery')
+            ->andWhere('gallery.isDelete = false');
 
-    //     if($status) {
-    //         $qb->andWhere('gallery.isPublished LIKE :status')
-    //             ->setParameter('status', $status);
-    //     }
+        if ($term) {
+            $qb->andWhere('gallery.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($status) {
+            $qb->andWhere('gallery.isPublished LIKE :status')
+                ->setParameter('status', $status);
+        }
+
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('gallery.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('gallery.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('gallery.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('gallery.' . $orderBy , $orderDir);
+    }
 
-    // public function getWithSearchQueryBuilderOnlyPublished(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('gallery')
-    //         ->andWhere('gallery.isDelete = false')
-    //         ->andWhere('gallery.isPublished = true');
+    public function getWithSearchQueryBuilderOnlyPublished(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('gallery')
+            ->andWhere('gallery.isDelete = false')
+            ->andWhere('gallery.isPublished = true');
 
-    //     if ($term) {
-    //         $qb->andWhere('gallery.title LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+        if ($term) {
+            $qb->andWhere('gallery.title LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('gallery.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('gallery.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
 
-    //     return $qb->orderBy('gallery.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('gallery.' . $orderBy , $orderDir);
+    }
 
     public function getPublishedGalleries()
     {

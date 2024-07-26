@@ -28,7 +28,7 @@ watch(() => props.show, (value) => {
   <form class="relative w-full h-full flex flex-col" >    
     <div class="pt-5 space-y-8">
       <x-input
-        v-model="form.data.email"
+        v-model="form.body.email"
         label="Email"
         type="email"
         :color="$auth.errors && $auth.errors?.email ? 'error' : 'default'"
@@ -44,7 +44,7 @@ watch(() => props.show, (value) => {
 
       <div>
         <x-input
-          v-model="form.data.password"
+          v-model="form.body.password"
           :type="canSeeThePassword ? 'text' : 'password'"
           label="Hasło"
           :color="$auth.errors && $auth.errors?.password ? 'error' : 'default'"
@@ -68,7 +68,7 @@ watch(() => props.show, (value) => {
 
       <div class="w-full space-y-6">
         <x-btn
-          :disabled="(!form.data.email || !form.data.password)"
+          :disabled="(!form.body.email || !form.body.password)"
           type="submit"
           color="success"
           :loading="$auth.processing?.login"

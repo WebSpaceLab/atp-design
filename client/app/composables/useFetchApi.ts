@@ -21,8 +21,9 @@ export function useFetchApi(path: string, options: any = { headers: {} }) {
   }
 
 
-  return useFetch(config.public.apiUrl + path, {
+  return useFetch(path, {
     ...options,
+    baseURL: config.public.apiUrl,
     credentials: 'include',
     watch: false,
     // server: true,

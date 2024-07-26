@@ -1,0 +1,40 @@
+
+{% apply inline_css(source('@styles/emails/verification-email.css')) %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <meta name="viewport" content="width=device-width">
+    
+    <title>{{ email.subject }}</title>
+</head>
+
+<body>
+<div class="body">
+    <div class="container">
+        <div class="header text-center">
+            <p>ATP</p>
+        </div>
+
+        <div class="content">
+            <h1 class="text-center">Witaj, {{ name }}!</h1>
+            
+            <h2 class="text-center">Dziękujemy za założenie konta</h2>
+            
+            <p class="block">
+                W celu aktywacji konta należy kliknąć poniższy przycisk 
+            </p>
+
+            <div class="text-center">
+                <a href="{{ url }}" class="block btn">Tak, chcę aktywować konto</a>
+            </div>
+        </div>
+
+        <div class="footer">
+        </div>
+    </div>
+</div>
+</body>
+</html>
+{% endapply %}

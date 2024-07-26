@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\GalleryRepository;
 use App\Trait\Timestamps;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\Collection;
@@ -200,24 +200,24 @@ class Gallery
         // zwraca unikalny identyfikator lub inną właściwość encji
         return $this->title;
     }
-// TODO Carbon
-    // #[Groups(["gallery:read", "gallery:write", 'gallery:show'])]
-    // public function getCreatedAtAgo(): ?string
-    // {
-    //     return  Carbon::instance($this->createdAt)->diffForHumans();
-    // }
 
-    // #[Groups(["gallery:read", "gallery:write", 'gallery:show'])]
-    // public function getUpdatedAtAgo(): ?string
-    // {
-    //     $updatedAtAgo = $this->updatedAt;
+    #[Groups(["gallery:read", "gallery:write", 'gallery:show'])]
+    public function getCreatedAtAgo(): ?string
+    {
+        return  Carbon::instance($this->createdAt)->diffForHumans();
+    }
 
-    //     if ($updatedAtAgo) {
-    //         $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
-    //     }
+    #[Groups(["gallery:read", "gallery:write", 'gallery:show'])]
+    public function getUpdatedAtAgo(): ?string
+    {
+        $updatedAtAgo = $this->updatedAt;
 
-    //     return  $updatedAtAgo;
-    // }
+        if ($updatedAtAgo) {
+            $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
+        }
+
+        return  $updatedAtAgo;
+    }
 
     public function getArticle(): ?Article
     {

@@ -2,12 +2,12 @@
 import cloneDeep from 'lodash.clonedeep'
 import isEqual from 'lodash.isequal'
 
-export default function useForm(data: any) {
-  let defaults = data
+export default function useForm(body: any) {
+  let defaults = body
   let recentlySuccessfulTimeoutId;
 
   const form = reactive({
-    data: cloneDeep(data),
+    body: cloneDeep(body),
     errors: {},
     dirty: false,
     hasErrors: false,
@@ -15,20 +15,23 @@ export default function useForm(data: any) {
     wasSuccessful: false,
     recentlySuccessful: false,
 
-    async submit(submitFn, hooks = {}) {
+    async submit(path, method, hooks = {}, options) {
       if (this.processing) return
 
+      let { flash } = useToast()
+
       const _hooks = {
-        onBeffore: async () => {
+        onBefore: async () => {
           this.processing = true
           this.wasSuccessful = false
           this.recentlySuccessful = false
 
           clearTimeout(recentlySuccessfulTimeoutId)
 
-          if (hooks.onBefore) await _hooks.onBefore()
+          if (hooks.onBefore) await hooks.onBefore()
         },
-        onSuccess: async (response) => {
+
+        onSuccess: async (res) => {
           this.clearErrors()
           this.wasSuccessful = true
           this.recentlySuccessful = true
@@ -37,58 +40,71 @@ export default function useForm(data: any) {
             this.recentlySuccessful = false
           }, 2000)
 
-          if (hooks.onSuccess) await _hooks.onSuccess(response)
+          if (res.flash) flash(res.flash.message, res.flash.style)
+          if (hooks.onSuccess) await hooks.onSuccess(res)
 
-          defaults = cloneDeep(this.data)
+          defaults = cloneDeep(this.body)
+          this.reset()
         },
+
         onError: async (error) => {
           this.hasErrors = true
-          if (error?.status === 422) {
+          if (error?.statusCode === 422) {
             this.clearErrors()
             this.setErrors(error.data?.errors)
           }
 
-          if (hooks.onError) await _hooks.onError(error)
+          if (error?.statusCode !== 422) flash(error.message, 'error')
+          if (hooks.onError) await hooks.onError(error)
         },
-        omFinish: async () => {
+
+        onFinish: async () => {
           this.processing = false
-          if (hooks.onFinish) await _hooks.onFinish()
+          if (hooks.onFinish) await hooks.onFinish()
         },
       }
 
       await _hooks.onBefore()
 
       try {
-        const response = await submitFn(this.data)
-        await _hooks.onSuccess(response)
+        const { data, error, status, clear } = await useFetchApi(path, {
+          method,
+          body: this.body,
+          ...options,
+        })
+        if (status.value === 'error') await _hooks.onError(error.value)
+        if (status.value === 'success') await _hooks.onSuccess(data.value)
+
+        if (status.value === 'success') clear()
       } catch (error) {
-        await _hooks.onError(error)
+        if (status.value === 'success') await _hooks.onSuccess(data.value)
+
       } finally {
-        await _hooks.onFinish()
+        if (status.value !== 'pending') await _hooks.onFinish()
       }
     },
 
-    reset(...data) {
+    reset(...body) {
       const clonedDefaults = cloneDeep(defaults)
 
-      if (data.length === 0) {
-        this.data = clonedDefaults
+      if (body.length === 0) {
+        this.body = clonedDefaults
         return
       }
 
-      data.forEach((key) => {
-        if (clonedDefaults[key] !== undefined) this.data[key] = clonedDefaults[key]
+      body.forEach((key) => {
+        if (clonedDefaults[key] !== undefined) this.body[key] = clonedDefaults[key]
       })
     },
 
-    clearErrors(...data) {
-      if (data.length === 0) {
+    clearErrors(...body) {
+      if (body.length === 0) {
         this.errors = {}
         this.hasErrors = false
         return
       }
 
-      data.forEach((key) => {
+      body.forEach((key) => {
         delete this.errors[key]
       })
 
@@ -105,8 +121,8 @@ export default function useForm(data: any) {
     },
   });
 
-  watch(() => form.data, () => {
-    form.dirty = !isEqual(form.data, defaults)
+  watch(() => form.body, () => {
+    form.dirty = !isEqual(form.body, defaults)
   }, {
     immediate: true, deep: true
   })

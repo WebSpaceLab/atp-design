@@ -15,10 +15,9 @@ export const useAppStore = defineStore('App', {
 
     actions: {
         async start() {
-            this.processing = true
+
             this.data = await api.get('/api/app')
 
-            // api.errors()
         }
     }
 })

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240725091151 extends AbstractMigration
+final class Version20240726172136 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,7 +29,9 @@ final class Version20240725091151 extends AbstractMigration
         $this->addSql('CREATE TABLE inbox (id INT AUTO_INCREMENT NOT NULL, owner_id INT DEFAULT NULL, subject VARCHAR(255) NOT NULL, sender VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(255) NOT NULL, content LONGTEXT NOT NULL, is_read TINYINT(1) DEFAULT NULL, is_delete TINYINT(1) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_7E11F3397E3C61F9 (owner_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE media (id INT AUTO_INCREMENT NOT NULL, author_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, file_name VARCHAR(255) DEFAULT NULL, mime_type VARCHAR(255) DEFAULT NULL, file_path VARCHAR(255) DEFAULT NULL, size INT DEFAULT NULL, description LONGTEXT DEFAULT NULL, is_delete TINYINT(1) DEFAULT NULL, is_used TINYINT(1) DEFAULT NULL, path_url VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_6A2CA10CF675F31B (author_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE reset_password_token (id INT AUTO_INCREMENT NOT NULL, owned_by_id INT DEFAULT NULL, token VARCHAR(255) NOT NULL, expires_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', is_verified TINYINT(1) NOT NULL, is_password_has_been_reset TINYINT(1) DEFAULT NULL, INDEX IDX_452C9EC55E70BCD7 (owned_by_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE `user` (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, username VARCHAR(255) NOT NULL, bio LONGTEXT DEFAULT NULL, avatar_url VARCHAR(255) DEFAULT NULL, is_active_account TINYINT(1) NOT NULL, first_name VARCHAR(255) DEFAULT NULL, last_name VARCHAR(255) DEFAULT NULL, is_agree TINYINT(1) NOT NULL, is_delete TINYINT(1) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE verification_token (id INT AUTO_INCREMENT NOT NULL, owned_by_id INT DEFAULT NULL, is_verified TINYINT(1) DEFAULT NULL, token VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_C1CC006B5E70BCD7 (owned_by_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', available_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', delivered_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_75EA56E0FB7336F0 (queue_name), INDEX IDX_75EA56E0E3BD61CE (available_at), INDEX IDX_75EA56E016BA31DB (delivered_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE api_token ADD CONSTRAINT FK_7BA2F5EB5E70BCD7 FOREIGN KEY (owned_by_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE article ADD CONSTRAINT FK_23A0E66F675F31B FOREIGN KEY (author_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE article ADD CONSTRAINT FK_23A0E6612469DE2 FOREIGN KEY (category_id) REFERENCES category (id)');
@@ -44,8 +46,6 @@ final class Version20240725091151 extends AbstractMigration
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10CF675F31B FOREIGN KEY (author_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE reset_password_token ADD CONSTRAINT FK_452C9EC55E70BCD7 FOREIGN KEY (owned_by_id) REFERENCES `user` (id)');
         $this->addSql('ALTER TABLE verification_token ADD CONSTRAINT FK_C1CC006B5E70BCD7 FOREIGN KEY (owned_by_id) REFERENCES `user` (id)');
-        $this->addSql('ALTER TABLE user ADD username VARCHAR(255) NOT NULL, ADD bio LONGTEXT DEFAULT NULL, ADD avatar_url VARCHAR(255) DEFAULT NULL, ADD is_active_account TINYINT(1) NOT NULL, ADD first_name VARCHAR(255) DEFAULT NULL, ADD last_name VARCHAR(255) DEFAULT NULL, ADD is_agree TINYINT(1) NOT NULL, ADD is_delete TINYINT(1) NOT NULL, ADD created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', ADD updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649F85E0677 ON user (username)');
     }
 
     public function down(Schema $schema): void
@@ -74,8 +74,8 @@ final class Version20240725091151 extends AbstractMigration
         $this->addSql('DROP TABLE inbox');
         $this->addSql('DROP TABLE media');
         $this->addSql('DROP TABLE reset_password_token');
+        $this->addSql('DROP TABLE `user`');
         $this->addSql('DROP TABLE verification_token');
-        $this->addSql('DROP INDEX UNIQ_8D93D649F85E0677 ON `user`');
-        $this->addSql('ALTER TABLE `user` DROP username, DROP bio, DROP avatar_url, DROP is_active_account, DROP first_name, DROP last_name, DROP is_agree, DROP is_delete, DROP created_at, DROP updated_at');
+        $this->addSql('DROP TABLE messenger_messages');
     }
 }

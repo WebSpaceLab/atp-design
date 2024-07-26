@@ -55,7 +55,7 @@ class PasswordResetLinkController extends AbstractAPIController
                 $errors[$propertyPath] = $violation->getMessage();
             }
 
-            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $user = $userRepository->findOneBy(['email' => $data['email']]);
@@ -172,7 +172,7 @@ class PasswordResetLinkController extends AbstractAPIController
                 $errors[$propertyPath] = $violation->getMessage();
             }
 
-            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
+            return $this->json(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $user = $token->getOwnedBy();

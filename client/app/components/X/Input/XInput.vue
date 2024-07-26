@@ -13,8 +13,8 @@ const props = defineProps({
         default: 'default'
     },
     icon: {
-        type: Boolean,
-        default: false
+        type: String,
+        default: ''
     },
     rightIcon: {
         type: Boolean,
@@ -84,14 +84,14 @@ function setIconColor (c) {
 </script>
 
 <template>
-    <ClientOnly class="relative w-full">
+    <div class="">
         <div class="relative w-full">
             <div
-                v-if="icon"
+                v-if="icon !== ''"
                 :class="[iconPosition === 'left' ? 'left-0' : 'right-0', setIconColor(color)]"
                 class="absolute inset-y-0 flex items-center p-3"
             >
-                <slot name="icon"/>
+                <Icon :name="icon" class="text-xl" />
             </div>
     
             <div
@@ -105,7 +105,7 @@ function setIconColor (c) {
                 :id="name"
                 :value="modelValue"
                 class="block rounded-lg px-2.5 pb-2.5 pt-2.5  w-full text-md decoration-none appearance-none  border focus:ring  peer bg-background dark:bg-background-dark"
-                :class="[setInputColor(color), icon & iconPosition === 'left' ? 'pl-10' : 'pl-3', validatedType ? validatedType : '']"
+                :class="[setInputColor(color), icon !== '' & iconPosition === 'left' ? 'pl-10' : 'pl-3', validatedType ? validatedType : '']"
                 :placeholder="label"
                 :name="name"
                 :type="type"
@@ -115,17 +115,18 @@ function setIconColor (c) {
                 @input="event => emits('update:modelValue', event.target.value)"
             >
     
-           <label
+            <label
                 :for="name"
-                :class="[setLabelColor(color), icon & iconPosition === 'left' ? 'translate-x-5 peer-focus:translate-x-0' : '', validatedType ? validatedType : '']"
-                class="absolute text-sm duration-500 opacity-0 peer-focus:opacity-100 transform -translate-y-9 px-4 py-1 scale-90 top-2 z-10 origin-[0] left-2.5  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-9 "
+                :class="[setLabelColor(color), icon !== '' & iconPosition === 'left' ? 'translate-x-5 peer-focus:translate-x-0' : '', validatedType ? validatedType : '']"
+                class="absolute  text-sm duration-500 opacity-0 peer-focus:opacity-100 transform -translate-y-9 px-4 py-1 scale-90 top-2 z-10 origin-[0] left-2.5  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-9 "
             >
                 {{ label }}
             </label>
         </div>
-
-        <div v-if="error" class="w-full text-center text-error-300 text-[14px] font-semibold bg-error-900 p-1 box-border mt-1 rounded">
-            {{ error }}
+    
+        <div v-if="error" class="w-full duration-500  text-center text-error-600 text-sm font-semibold bg-error-900 p-1 box-border mt-1  rounded">
+            <p>{{ error }}</p>
         </div>
-    </ClientOnly>
+    </div>
+    
 </template>

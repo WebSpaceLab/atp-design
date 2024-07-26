@@ -29,9 +29,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank()]
-    #[Assert\Email()]
-    #[Groups(['profile:read', 'user:all', 'article:read', "gallery:read", "gallery:write"])]
+    #[Assert\NotBlank(message: 'Please enter an email address.', groups: ['register'])]
+    #[Assert\Email(groups: ['register'])]
+    #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -42,9 +42,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(groups: ['register'])]
+    // #[Assert\Length(min: 6, max: 20, groups: ['register'])]
+    #[Assert\NotCompromisedPassword()]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(groups: ['register'])]
+    #[Assert\Length(min: 2, groups: ['register'])]
     #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
     private ?string $username = null;
 
@@ -86,6 +91,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $resetPasswordTokens;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Consent is required.', groups: ['register'])]
+    #[Assert\Type(type: 'bool', groups: ['register'])]
     #[Groups(['user:all'])]
     private ?bool $isAgree = false;
 
@@ -214,7 +221,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             return $_ENV('APP_URL').$this->avatarUrl;
         }
 
-        return $_ENV('APP_URL').'/user-placeholder.png';
+        return $_ENV('APP_URL') . '/user-placeholder.png';
     }
 
     public function setAvatarUrl(?string $avatarUrl): static
@@ -348,32 +355,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return '/api/user/' . $this->getId();
     }
 
-
-// TODO: Carbon
-    // #[Groups(['profile:read'])]
-    // public function getApiTokenExpiresAt()
-    // {
-    //     return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
-    // }
+    #[Groups(['profile:read'])]
+    public function getApiTokenExpiresAt()
+    {
+        return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
+    }
 
 
-    // #[Groups(['profile:read', 'user:all'])]
-    // public function getCreatedAtAgo(): ?string
-    // {
-    //     return  Carbon::instance($this->createdAt)->diffForHumans();
-    // }
+    #[Groups(['profile:read', 'user:all'])]
+    public function getCreatedAtAgo(): ?string
+    {
+        return  Carbon::instance($this->createdAt)->diffForHumans();
+    }
 
-    // #[Groups(['profile:read', 'user:all'])]
-    // public function getUpdatedAtAgo(): ?string
-    // {
-    //     $updatedAtAgo = $this->updatedAt;
+    #[Groups(['profile:read', 'user:all'])]
+    public function getUpdatedAtAgo(): ?string
+    {
+        $updatedAtAgo = $this->updatedAt;
 
-    //     if ($updatedAtAgo) {
-    //         $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
-    //     }
+        if ($updatedAtAgo) {
+            $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
+        }
 
-    //     return  $updatedAtAgo;
-    // }
+        return  $updatedAtAgo;
+    }
 
     public function getVerificationToken(): ?VerificationToken
     {

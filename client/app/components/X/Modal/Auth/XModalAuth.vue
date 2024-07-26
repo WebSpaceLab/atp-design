@@ -82,7 +82,7 @@ function toggleModalRegisterToLogin (event: boolean) {
           </h2>
         </div>
 
-        <XFormAuthRegister :show="isShowRegister" />
+        <XFormAuthRegister :show="isShowRegister" @close="toggleRegister" />
   
       </div>
     </XModal>

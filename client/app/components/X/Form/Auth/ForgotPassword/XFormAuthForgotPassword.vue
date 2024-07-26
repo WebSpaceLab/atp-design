@@ -39,7 +39,7 @@ watch(() => props.show, (value) => {
     
             <div class="pt-5 space-y-6">
                 <x-input
-                    v-model="form.data.email"
+                    v-model="form.body.email"
                     :color="$auth.errors && $auth.errors?.email ? 'error' : 'default'"
                     label="Email"
                     type="email"
@@ -54,7 +54,7 @@ watch(() => props.show, (value) => {
         
                 <div class="w-full space-y-6">
                     <x-btn
-                        :disabled="(!form.data.email)"
+                        :disabled="(!form.body.email)"
                         type="submit"
                         color="success"
                         :loading="$auth.processing?.forgotPassword"

@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -71,29 +70,10 @@ abstract class AbstractAPIController extends AbstractController
     {
         if($message) {
             $this->flashBag = [
-                'type' => $type, 
+                'style' => $type, 
                 'message' => $message
             ];
         }
-    }
-
-    public function validate(mixed $value = null, mixed $data = null)
-    {
-        $constraints = new Assert\Collection($value);
-
-        $violations = $this->validator->validate($data, $constraints);
-
-        if (count($violations) > 0) {
-            $errors = [];
-            foreach ($violations as $violation) {
-                $propertyPath = trim($violation->getPropertyPath(), '[\]');
-                $errors[$propertyPath] = $violation->getMessage();
-            }
-
-            return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST); 
-        }
-
-        return;
     }
 
     public function formatValidationErrors(ConstraintViolationListInterface $violations): array
@@ -105,6 +85,18 @@ abstract class AbstractAPIController extends AbstractController
         }
 
         return $errors;
+    }
+
+
+    public function validate( ConstraintViolationListInterface $violations)
+    {
+        if (count($violations) > 0) {
+            $errors = $this->formatValidationErrors($violations);
+            
+            return $this->api(['errors' => $errors], [], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return null;
     }
 
     

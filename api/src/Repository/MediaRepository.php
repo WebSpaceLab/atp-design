@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Media;
 use App\Service\MediaHelper;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder as DoctrineQueryBuilder;
@@ -23,65 +23,65 @@ class MediaRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Media::class);
     }
-// TODO Carbon
-    // public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $fileType = 'image'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('media');
 
-    //     if ($term) {
-    //         $qb->andWhere('media.name LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC', ?string $fileType = 'image'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('media');
 
-    //     if($fileType) {
-    //         $qb->andWhere('media.mimeType LIKE :mime_types')
-    //             ->setParameter('mime_types', $fileType);
-    //     }
+        if ($term) {
+            $qb->andWhere('media.name LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($fileType) {
+            $qb->andWhere('media.mimeType LIKE :mime_types')
+                ->setParameter('mime_types', $fileType);
+        }
+
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('media.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('media.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
         
 
-    //     return $qb->orderBy('media.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('media.' . $orderBy , $orderDir);
+    }
 
-    // public function getWithSearchQueryBuilderForUser(?string $term, ?string $fileType, ?string $month, ?int $userId, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
-    // {
-    //     $qb = $this->createQueryBuilder('media')
-    //         ->andWhere('media.isDelete = false')
-    //         ->innerJoin('media.author', 'user')
-    //         ->addSelect('user')
-    //         ->andWhere('user.id = :userId')
-    //         ->setParameter('userId', $userId);
+    public function getWithSearchQueryBuilderForUser(?string $term, ?string $fileType, ?string $month, ?int $userId, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
+    {
+        $qb = $this->createQueryBuilder('media')
+            ->andWhere('media.isDelete = false')
+            ->innerJoin('media.author', 'user')
+            ->addSelect('user')
+            ->andWhere('user.id = :userId')
+            ->setParameter('userId', $userId);
 
-    //     if ($term) {
-    //         $qb->andWhere('media.name LIKE :term')
-    //             ->setParameter('term', '%' . $term . '%');
-    //     }
+        if ($term) {
+            $qb->andWhere('media.name LIKE :term')
+                ->setParameter('term', '%' . $term . '%');
+        }
 
-    //     if($fileType) {
-    //         $qb->andWhere('media.mimeType IN :mimeType')
-    //             ->setParameter('mimeType', MediaHelper::getMimes($fileType));
-    //     }
+        if($fileType) {
+            $qb->andWhere('media.mimeType IN :mimeType')
+                ->setParameter('mimeType', MediaHelper::getMimes($fileType));
+        }
 
-    //     if($month) {
-    //         $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
-    //         $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
+        if($month) {
+            $from = Carbon::createFromFormat('d-m-Y', $month)->startOfMonth();
+            $to = Carbon::createFromFormat('d-m-Y', $month)->endOfMonth();
     
-    //         $qb->andWhere('media.createdAt BETWEEN :from AND :to')
-    //             ->setParameter('from', $from)
-    //             ->setParameter('to', $to);
-    //     }
+            $qb->andWhere('media.createdAt BETWEEN :from AND :to')
+                ->setParameter('from', $from)
+                ->setParameter('to', $to);
+        }
         
 
-    //     return $qb->orderBy('media.' . $orderBy , $orderDir);
-    // }
+        return $qb->orderBy('media.' . $orderBy , $orderDir);
+    }
 
     public function getActiveMimeTypes()
     {

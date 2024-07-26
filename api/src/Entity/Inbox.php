@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\InboxRepository;
 use App\Trait\Timestamps;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -144,24 +144,24 @@ class Inbox
 
         return $this;
     }
-// TODO: Carbon
-    // #[Groups(['admin:inbox:read'])]
-    // public function getCreatedAtAgo(): ?string
-    // {
-    //     return  Carbon::instance($this->createdAt)->diffForHumans();
-    // }
 
-    // #[Groups(['admin:inbox:read'])]
-    // public function getUpdatedAtAgo(): ?string
-    // {
-    //     $updatedAtAgo = $this->updatedAt;
+    #[Groups(['admin:inbox:read'])]
+    public function getCreatedAtAgo(): ?string
+    {
+        return  Carbon::instance($this->createdAt)->diffForHumans();
+    }
 
-    //     if ($updatedAtAgo) {
-    //         $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
-    //     }
+    #[Groups(['admin:inbox:read'])]
+    public function getUpdatedAtAgo(): ?string
+    {
+        $updatedAtAgo = $this->updatedAt;
 
-    //     return  $updatedAtAgo;
-    // }
+        if ($updatedAtAgo) {
+            $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
+        }
+
+        return  $updatedAtAgo;
+    }
 
     public function isIsDelete(): ?bool
     {

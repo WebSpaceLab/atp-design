@@ -1,91 +1,80 @@
 export default function useApi() {
+  // 
+
   return reactive({
-    status: '' as string,
-    errorBag: null,
     processing: false,
-    async get(path: string, options = { headers: {} }) {
-      return await useFetchApi(path, options).then((response) => {
-        if (response.error.value) {
-          return response.error.value
+    flash: null as { message: string, style: string } | null,
+    error: null as any,
+
+    async fetch(path: string, method: string, options: any, hooks = {} as any) {
+      // if (this.processing) return
+      let { flash } = useToast()
+      const _hooks = {
+        onBefore: async () => {
+          this.processing = true
+          this.error = null
+          this.flash = null
+
+          if (hooks.start) await hooks.start()
+        },
+
+        onSuccess: async (res: any) => {
+          this.flash = res.flash
+
+          if (res.flash) flash(res.flash.message, res.flash.style)
+          if (hooks.success) await hooks.success(res)
+
+          return res.data
+        },
+
+        onError: async (error: any) => {
+          this.error = error
+
+          if (error.status !== 422) flash(error.message, 'error')
+
+          if (hooks.error) await hooks.error(error)
+
+          return error
+        },
+
+        onFinish: async () => {
+          this.processing = false
+
+          if (hooks.finish) await hooks.finish()
         }
+      }
 
-        this.status = response.status.value
-        this.processing = response.pending.value
-        return response.data.value
-      })
+      await _hooks.onBefore()
+
+      const { data, error, status, clear } = await useFetchApi(path, { method, ...options })
+
+      if (error.value) return await _hooks.onError(error.value)
+
+      if (status.value === 'success') return await _hooks.onSuccess(data.value)
+
+      await _hooks.onFinish()
+
+      clear()
     },
 
-    async post(path: string, options = { headers: {} }) {
-      return await useFetchApi(path, { method: 'POST', ...options }).then((response) => {
-        if (response.error.value) {
-          if (response.error.value.statusCode === 422) {
-            this.errorBag = response.error.value.data.errors
-          }
-
-          return response.error.value
-        }
-
-        this.status = response.status.value
-        this.processing = response.pending.value
-        return response.data.value
-      })
+    async get(path: string, hooks = {}, options = { headers: {} }) {
+      return await this.fetch(path, 'GET', options, hooks)
     },
 
-    async put(path: string, options = { headers: {} }) {
-      return await useFetchApi(path, { method: 'PUT', ...options }).then((response) => {
-        if (response.error.value) {
-          if (response.error.value.statusCode === 422) {
-            this.errorBag = response.error.value.data.errors
-          }
-
-          return response.error.value
-        }
-
-        this.status = response.status.value
-        this.processing = response.pending.value
-
-        return response.data.value
-      })
+    async post(path: string, body: any, hooks = {}, options = { headers: {} }) {
+      return await this.fetch(path, 'POST', { body, ...options }, hooks)
     },
 
-    async patch(path: string, options = { headers: {} }) {
-      return await useFetchApi(path, { method: 'PATCH', ...options }).then((response) => {
-        if (response.error.value) {
-          if (response.error.value.statusCode === 422) {
-            this.errorBag = response.error.value.data.errors
-          }
-
-          return response.error.value
-        }
-
-        this.status = response.status.value
-        this.processing = response.pending.value
-
-        return response.data.value
-      })
+    async put(path: string, body: any, hooks = {}, options = { headers: {} }) {
+      return await this.fetch(path, 'PUT', { body, ...options }, hooks)
     },
 
-    async delete(path: string) {
-      return await useFetchApi(path, { method: 'DELETE' }).then((response) => {
-        if (response.error.value) {
-          return response.error.value
-        }
-
-        this.status = response.status.value
-        this.processing = response.pending.value
-
-        return response.data.value
-      })
+    async patch(path: string, body: any, hooks = {}, options = { headers: {} }) {
+      return await this.fetch(path, 'PATCH', { body, ...options }, hooks)
     },
 
-    async clear() {
-      this.errorBag = null
-      this.status = ''
-      this.processing = false
+    async delete(path: string, hooks = {}, options = { headers: {} }) {
+      return await this.fetch(path, 'DELETE', options, hooks)
     },
-
-    async csrf() {
-      return await useFetchApi('/sanctum/csrf-cookie')
-    }
   })
 }

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use App\Trait\Timestamps;
-// use Carbon\Carbon;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -205,24 +205,24 @@ class Article
 
         return $this;
     }
-// TODO Carbon
-    // #[Groups(['homepage:read', 'profile:read', 'admin:article:read', 'article:show'])]
-    // public function getCreatedAtAgo(): ?string
-    // {
-    //     return  Carbon::instance($this->createdAt)->diffForHumans();
-    // }
 
-    // #[Groups(['profile:read', 'admin:article:read'])]
-    // public function getUpdatedAtAgo(): ?string
-    // {
-    //     $updatedAtAgo = $this->updatedAt;
+    #[Groups(['homepage:read', 'profile:read', 'admin:article:read', 'article:show'])]
+    public function getCreatedAtAgo(): ?string
+    {
+        return  Carbon::instance($this->createdAt)->diffForHumans();
+    }
 
-    //     if ($updatedAtAgo) {
-    //         $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
-    //     }
+    #[Groups(['profile:read', 'admin:article:read'])]
+    public function getUpdatedAtAgo(): ?string
+    {
+        $updatedAtAgo = $this->updatedAt;
 
-    //     return  $updatedAtAgo;
-    // }
+        if ($updatedAtAgo) {
+            $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
+        }
+
+        return  $updatedAtAgo;
+    }
 
     public function getCategory(): ?Category
     {
