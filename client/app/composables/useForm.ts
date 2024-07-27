@@ -28,7 +28,7 @@ export default function useForm(body: any) {
 
           clearTimeout(recentlySuccessfulTimeoutId)
 
-          if (hooks.onBefore) await hooks.onBefore()
+          if (hooks.start) await hooks.start()
         },
 
         onSuccess: async (res) => {
@@ -40,8 +40,8 @@ export default function useForm(body: any) {
             this.recentlySuccessful = false
           }, 2000)
 
+          if (hooks.success) await hooks.success(res)
           if (res.flash) flash(res.flash.message, res.flash.style)
-          if (hooks.onSuccess) await hooks.onSuccess(res)
 
           defaults = cloneDeep(this.body)
           this.reset()
@@ -55,33 +55,27 @@ export default function useForm(body: any) {
           }
 
           if (error?.statusCode !== 422) flash(error.message, 'error')
-          if (hooks.onError) await hooks.onError(error)
+          if (hooks.error) await hooks.error(error)
         },
 
         onFinish: async () => {
           this.processing = false
-          if (hooks.onFinish) await hooks.onFinish()
+          if (hooks.finish) await hooks.finish()
         },
       }
 
       await _hooks.onBefore()
 
-      try {
-        const { data, error, status, clear } = await useFetchApi(path, {
-          method,
-          body: this.body,
-          ...options,
-        })
-        if (status.value === 'error') await _hooks.onError(error.value)
-        if (status.value === 'success') await _hooks.onSuccess(data.value)
+      const { data, error, status, clear } = await useFetchApi(path, {
+        method,
+        body: this.body,
+        ...options,
+      })
 
-        if (status.value === 'success') clear()
-      } catch (error) {
-        if (status.value === 'success') await _hooks.onSuccess(data.value)
-
-      } finally {
-        if (status.value !== 'pending') await _hooks.onFinish()
-      }
+      if (status.value === 'error') await _hooks.onError(error.value)
+      if (status.value === 'success') await _hooks.onSuccess(data.value)
+      if (status.value === 'success') clear()
+      if (status.value !== 'pending') await _hooks.onFinish()
     },
 
     reset(...body) {

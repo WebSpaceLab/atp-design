@@ -1,51 +1,26 @@
 <script setup lang="ts">
+const { form , register } = useRegisterStore()
+
 let canSeeThePassword = ref(false)
 let canSeeTheConfirmPassword = ref(false)
+
 const isOpenAgreementModel = ref<boolean>(false)
 const lang = ref('en')
+
 const optionsSelected = ref([
   { value: 'en', label: 'English', selected: false },
   { value: 'pl', label: 'Polish', selected: true }
 ])
-const emit = defineEmits(['close'])
-const props = defineProps({
-  show: {
-    type: Boolean,
-  }
-})
-
-const form = useForm({
-  username: '',
-  email: '',
-  password: '',
-  password_confirmation: '',
-  isAgree: true
-}) as any
 
 function agreement(value: boolean) {
   form.body.isAgree = value
   isOpenAgreementModel.value = false
 }
-
-const submit = () => {
-  form.submit('/api/auth/register', 'POST' ,{
-    onSuccess: () => {
-      emit('close', false)
-    },
-  })
-}
-
-watch(() => props.show, (value) => {
-  if (value === false) {
-    form.reset()
-    form.clearErrors()
-  }
-})
 </script>
 
 <template>
 <div>
-  <form  class="relative flex flex-col w-full h-full" @submit.prevent="submit()">
+  <form  class="relative flex flex-col w-full h-full" @submit.prevent="register()">
     <div class="pt-5 space-y-8">
       <x-input
         v-model="form.body.username"

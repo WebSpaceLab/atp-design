@@ -50,7 +50,8 @@
 
         <template #action>
           <div class="flex space-x-3">
-            <XModalAuth />
+            <XModalAuthLogin/>
+            <XModalAuthRegister/>
           </div>
 
           <!-- Auth buttons 
