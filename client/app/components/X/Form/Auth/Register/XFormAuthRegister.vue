@@ -105,13 +105,9 @@ watch(() => props.show, (value) => {
 
       <div class="flex flex-col">
         <div class="flex items-center">
-          <input id="link-checkbox" type="checkbox" v-model="form.body.isAgree" class="w-4 h-4 text-blue-600 bg-blue-300 border-blue-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-          
-          <label for="link-checkbox" class="text-sm font-medium  text-gray-900 dark:text-gray-300">      
-            <span class="flex items-center justify-center translate-x-3 italic">I accept the 
-              <x-btn variant="ghost" label="Terms and Conditions" size="sm" @click="isOpenAgreementModel = true" />
-            </span>
-          </label>
+          <x-checkbox v-model="form.body.isAgree" label="I accept the" color="primary" />
+
+          <x-btn variant="link" color="primary" label="Terms and Conditions" size="sm" @click="isOpenAgreementModel = true" />
         </div>
 
         <div v-if="form.errors && form.errors?.isAgree" class="w-full text-center text-error-900 text-[14px] font-semibolds bg-error-300 p-2 box-border mt-1 rounded">{{ form.errors?.isAgree }}</div>

@@ -59,7 +59,18 @@
 
   const ripple = ref(false);
 
-  function setSize(s: string, sq: boolean, b: boolean) {
+  function setSize(s: string, sq: boolean, b: boolean, v: string) {
+    if(v === 'link') {
+      return {
+        'default': 'text-base font-semibold',
+        'xs': 'text-xs font-semibold',
+        'sm': 'text-sm font-semibold',
+        'md': 'text-md font-semibold',
+        'lg': 'text-lg font-semibold',
+        'xl': 'text-xl font-semibold',
+      }[s];
+    }
+    
     if (b) {
       return {
         'default': 'text-md font-semibold  w-full py-2',
@@ -157,7 +168,7 @@
     class="flex justify-center items-center relative transition duration-150 ease-out tracking-wider focus:ring-focus overflow-hidden"
     :class="[
       setVariant(variant, color, disabled),
-      setSize(size, square, block),
+      setSize(size, square, block, variant),
       { 'shadow shadow-slate-600': shadow },
       setRounded(rounded),
       setIconPosition(iconPosition),
