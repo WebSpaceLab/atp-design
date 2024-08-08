@@ -8,24 +8,22 @@ export function useFetchApi(path: string, options: any = { headers: {} }) {
     referer: config.public.appUrl,
   }
 
-  if (token && token.value !== null) {
-    headers['Authorization'] = 'Bearer ' + token
+  if (token.value) {
+    headers['Authorization'] = 'Bearer ' + token.value
   }
 
-  if (import.meta.server) {
-    headers = {
-      ...headers,
-      ...useRequestHeaders(['cookie'])
-    }
-  }
+  // if (import.meta.server) {
+  //   headers = {
+  //     ...headers,
+  //     // ...useRequestHeaders(['cookie'])
+  //   }
+  // }
 
   return useFetch(path, {
     ...options,
-    baseURL: config.public.apiUrl,
+    // baseURL: config.public.apiUrl,
     credentials: 'include',
     watch: false,
-    inmitli: false,
-    // server: true,
     headers: {
       ...headers,
       ...options?.headers

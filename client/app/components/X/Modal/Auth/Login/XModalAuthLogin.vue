@@ -1,18 +1,17 @@
 <script lang="ts" setup>
-const { toggleLogin, toggleModalLoginToRegister } = useLoginStore()
-const { isShowLogin } = storeToRefs(useLoginStore())
+const {isShowLoginModal, toggleLoginModal, toggleRegisterModal } = useModalHelper()
 </script>
 
 <template>
   <XTooltip  text="Login">
     <XBtn variant="ghost" color="primary" icon="i-line-md-person-filled" square
-      @click="toggleLogin(true)" />
+      @click="toggleLoginModal" />
   </XTooltip>
 
-  <XModal :show="isShowLogin" :closeable="true" max-width="md">
+  <XModal :show="isShowLoginModal" :closeable="true" max-width="md" @close="toggleLoginModal">
     <div class="w-120 relative flex flex-col justify-center pt-16 px-8 pb-8">
       <div class="absolute top-2 right-2">
-        <XBtnCloseToOpen :switcher="isShowLogin" @click="toggleLogin(false)" />
+        <XBtnCloseToOpen :switcher="isShowLoginModal" @click="toggleLoginModal" />
       </div>
 
       <div class="text-center pb-8">
@@ -25,11 +24,11 @@ const { isShowLogin } = storeToRefs(useLoginStore())
 
           <p>Don't have an account?</p>
 
-          <XBtn variant="link" label="Sign Up" @click="toggleModalLoginToRegister()" />
+          <XBtn variant="link" label="Sign Up" @click="toggleRegisterModal" />
         </div>
       </div>
 
-      <XFormAuthLogin :show="isShowLogin" />
+      <XFormAuthLogin />
 
       <XDivider label="OR" class="py-4" />
 

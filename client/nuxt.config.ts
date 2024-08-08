@@ -12,16 +12,17 @@ export default defineNuxtConfig({
     vscode: {},
   },
 
-  ssr: false,
+  ssr: true,
 
   experimental: {
     componentIslands: true,
+    // renderJsonPayloads: false,
     typedPages: true,
   },
 
   modules: [
     "@nuxt/eslint",
-    // "nuxt-auth-utils",
+    "nuxt-auth-utils",
     "@nuxt/content",
     "@nuxt/image",
     '@nuxtjs/color-mode',
@@ -32,7 +33,7 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
-    proxyUrl: process.env.NUXT_PUBLIC_PROXY_URL,
+    proxyUrl: process.env.NUXT_PROXY_URL,
     public: {
       appUrl: process.env.NUXT_PUBLIC_APP_URL,
       apiUrl: process.env.NUXT_PUBLIC_API_URL,
@@ -58,27 +59,14 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-
-  // imports: {
-  //   dirs: [
-  //     'stores',
-  //     'stores/**',
-  //     'plugins',
-  //     'plugins/**',
-  //     'composables',
-  //     'composables/*/index.{ts,js,mjs,mts}',
-  //     'composables/**'
-  //   ]
-  // },
-
   // nitro: {
   //   // prerender: {
   //   //   crawlLinks: true,
   //   //   failOnError: false,
   //   // },
   //   routeRules: {
-  //     '/api/**': {
-  //       proxy: "https://127.0.0.1:8000/**"
+  //     '/px/**': {
+  //       proxy: "http://localhost:8000/**"
   //     }
   //   }
   // },

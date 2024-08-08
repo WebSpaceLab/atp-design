@@ -1,43 +1,35 @@
+
+
 export const useRegisterStore = defineStore('Register', () => {
-    const isShowRegister = ref(false)
+  const { $post, loading, errors } = useApi()
 
-    // Register form
-    const form = useForm({
-        username: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        isAgree: false
-    }) as any
-
-    // Register the user
-    const register = () => {
-        form.submit('/api/auth/register', 'POST', {
-            finish: () => {
-                useRegisterStore().toggleRegister(false)
-            }
-        })
+  const form = reactive({
+    loading: false,
+    errors: [],
+    body: {
+      username: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
     }
+  }) as any
 
-    // Toggle the register modal
-    function toggleRegister(event: boolean) {
-        isShowRegister.value = event
-        form.reset()
-    }
+  // Register the user
+  const register = async (body: any) => {
+    await $post('/api/auth/register', body)
+  }
 
-    // Toggle the register modal to login modal
-    function toggleModalRegisterToLogin() {
-        useLoginStore().isShowLogin = computed(() => !useLoginStore().isShowLogin).value
-        isShowRegister.value = computed(() => !isShowRegister.value).value
-        form.reset()
-        useLoginStore().form.reset()
-    }
+  watch(loading.value, (value) => {
+    form.loading = value
+  })
 
-    return {
-        form,
-        register,
-        isShowRegister,
-        toggleRegister,
-        toggleModalRegisterToLogin
-    }
+  watch(errors, async (value) => {
+    // console.log('errors', value)
+    form.errors = await value
+  })
+
+  return {
+    form,
+    register
+  }
 })

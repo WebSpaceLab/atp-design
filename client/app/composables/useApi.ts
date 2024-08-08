@@ -1,80 +1,111 @@
 export default function useApi() {
-  // 
+  let loading = useState('loading', () => false) as any
+  let errors = useState('errors', () => [] as any)
+  let data = useState('data', () => [] as any)
 
-  return reactive({
-    processing: false,
-    flash: null as { message: string, style: string } | null,
-    error: null as any,
+  let { flash } = useToast()
+  let token: string | any = useCookie('Api-Token')
 
-    async fetch(path: string, method: string, options: any, hooks = {} as any) {
-      // if (this.processing) return
-      let { flash } = useToast()
-      const _hooks = {
-        onBefore: async () => {
-          this.processing = true
-          this.error = null
-          this.flash = null
+  let headers: any = {
+    "Content-Type": "application/json",
+  }
 
-          if (hooks.start) await hooks.start()
-        },
+  if (token.value) {
+    headers['Authorization'] = 'Bearer ' + token.value
+  }
 
-        onSuccess: async (res: any) => {
-          this.flash = res.flash
+  async function $api(path: string, method: string, options: any, hooks = {} as any) {
+    if (loading.value) return
 
-          if (res.flash) flash(res.flash.message, res.flash.style)
-          if (hooks.success) await hooks.success(res)
+    const _hooks = {
+      onBefore: async () => {
+        loading.value = true
+        clearErrors()
 
-          return res.data
-        },
+        if (hooks.start) await hooks.start()
+      },
 
-        onError: async (error: any) => {
-          this.error = error
+      onSuccess: async (res: any) => {
+        if (res.flash) flash(res.flash.message, res.flash.style)
+        if (res.refresh) location.reload()
+        if (hooks.success) await hooks.success(res)
+        if (res.redirect) location.href = res.redirect
 
-          if (error.status !== 422) flash(error.message, 'error')
+        data.value.push(res.data)
 
-          if (hooks.error) await hooks.error(error)
+        return res.data
+      },
 
-          return error
-        },
+      onError: async (error: any) => {
+        if (error?.statusCode !== 422 && error?.statusCode !== 401) flash(error.data.title, 'error')
+        if (error?.statusCode === 401) flash('Unauthorized', 'error')
 
-        onFinish: async () => {
-          this.processing = false
+        if (hooks.error) await hooks.error(error)
 
-          if (hooks.finish) await hooks.finish()
+        if (error?.statusCode === 422) {
+          setErrors(error.data?.errors)
         }
+
+        return error
+      },
+
+      onFinish: async () => {
+        loading.value = false
+
+        if (hooks.finish) await hooks.finish()
       }
+    }
 
-      await _hooks.onBefore()
+    await _hooks.onBefore()
 
-      const { data, error, status, clear } = await useFetchApi(path, { method, ...options })
+    return await $fetch(path, {
+      method,
+      ...options,
+      headers: {
+        ...headers,
+        ...options?.headers
+      }
+    })
+      .then(async (res: any) => {
+        return await _hooks.onSuccess(res)
+      })
+      .catch(async (error: any) => {
+        return await _hooks.onError(error)
+      })
+      .finally(async () => {
+        return await _hooks.onFinish()
+      })
+  }
 
-      if (error.value) return await _hooks.onError(error.value)
 
-      if (status.value === 'success') return await _hooks.onSuccess(data.value)
 
-      await _hooks.onFinish()
+  const $get = async (path: string, hooks = {}, options = { headers: {} }) => {
+    return await $api(path, 'GET', options, hooks)
+  }
 
-      clear()
-    },
+  const $post = async (path: string, body: any, hooks = {}, options = { headers: {} }) => {
+    return await $api(path, 'POST', { body, ...options }, hooks)
+  }
 
-    async get(path: string, hooks = {}, options = { headers: {} }) {
-      return await this.fetch(path, 'GET', options, hooks)
-    },
+  const $put = async (path: string, body: any, hooks = {}, options = { headers: {} }) => {
+    return await $api(path, 'PUT', { body, ...options }, hooks)
+  }
 
-    async post(path: string, body: any, hooks = {}, options = { headers: {} }) {
-      return await this.fetch(path, 'POST', { body, ...options }, hooks)
-    },
+  const $patch = async (path: string, body: any, hooks = {}, options = { headers: {} }) => {
+    return await $api(path, 'PATCH', { body, ...options }, hooks)
+  }
 
-    async put(path: string, body: any, hooks = {}, options = { headers: {} }) {
-      return await this.fetch(path, 'PUT', { body, ...options }, hooks)
-    },
+  const $remove = async (path: string, hooks = {}, options = { headers: {} }) => {
+    return await $api(path, 'DELETE', options, hooks)
+  }
 
-    async patch(path: string, body: any, hooks = {}, options = { headers: {} }) {
-      return await this.fetch(path, 'PATCH', { body, ...options }, hooks)
-    },
+  function clearErrors() {
+    errors.value = []
+  }
 
-    async delete(path: string, hooks = {}, options = { headers: {} }) {
-      return await this.fetch(path, 'DELETE', options, hooks)
-    },
-  })
+  function setErrors(error: any) {
+    errors.value = error
+  }
+
+  return { $api, $get, $post, $put, $patch, $remove, loading, errors, data }
 }

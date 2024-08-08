@@ -24,7 +24,7 @@ class ApiTokenHandler implements AccessTokenHandlerInterface {
         $SessionToken = session_create_id();
         $tokenLifetime = new DateInterval('PT1H');
         $accessToken = self::ACCESS_TOKEN_PREFIX . $SessionToken . bin2hex(random_bytes(64));
-
+   
         $this->apiTokenRepository->setApiTokenWithExpiration($accessToken, $user, $tokenLifetime, true);
 
         return $accessToken;

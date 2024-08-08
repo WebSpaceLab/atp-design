@@ -1,10 +1,11 @@
-<script setup>
-const { form, forgotPassword } = useForgotPasswordStore()
+<script setup lang="ts">
+const { form } =  storeToRefs(useForgotPasswordStore()) 
+const { forgotPassword } = useForgotPasswordStore()
 </script>
 
 <template>
     <div>
-        <form class="relative flex flex-col w-100 h-full" @submit.prevent="forgotPassword()">
+        <form class="relative flex flex-col w-100 h-full" @submit.prevent="forgotPassword">
             <span class="w-full h-full text-basic-light dark:text-basic-dark flex flex-col justify-center items-center">
     
                 <div class="text-2xl md:text-3xl mb-4 font-bold">Do not you remember the password?</div>
@@ -16,7 +17,7 @@ const { form, forgotPassword } = useForgotPasswordStore()
                     :color="form.errors && form.errors?.email ? 'error' : 'default'"
                     label="Email"
                     type="email"
-                    icon
+                    icon="material-symbols:mark-email-unread-sharp"
                     name="email_forgot_password"
                     :error="form.errors && form.errors?.email ? form.errors.email : ''"
                 >

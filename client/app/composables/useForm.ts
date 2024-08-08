@@ -1,28 +1,28 @@
 // @ts-nocheck
+
 import cloneDeep from 'lodash.clonedeep'
 import isEqual from 'lodash.isequal'
 
-export default function useForm(body: any) {
+export default function useForm(body) {
   let defaults = body
   let recentlySuccessfulTimeoutId;
+  let { flash } = useToast()
 
   const form = reactive({
     body: cloneDeep(body),
-    errors: {},
-    dirty: false,
-    hasErrors: false,
-    processing: false,
-    wasSuccessful: false,
-    recentlySuccessful: false,
+    errors: {} as any,
+    dirty: false as boolean,
+    hasErrors: false as boolean,
+    loading: false as boolean,
+    wasSuccessful: false as boolean,
+    recentlySuccessful: false as boolean,
 
-    async submit(path, method, hooks = {}, options) {
-      if (this.processing) return
-
-      let { flash } = useToast()
+    async submit(path, method = 'POST', hooks = {}, options = {}) {
+      if (this.loading) return
 
       const _hooks = {
         onBefore: async () => {
-          this.processing = true
+          // this.loading = true
           this.wasSuccessful = false
           this.recentlySuccessful = false
 
@@ -31,7 +31,7 @@ export default function useForm(body: any) {
           if (hooks.start) await hooks.start()
         },
 
-        onSuccess: async (res) => {
+        onSuccess: async (res: any) => {
           this.clearErrors()
           this.wasSuccessful = true
           this.recentlySuccessful = true
@@ -41,41 +41,49 @@ export default function useForm(body: any) {
           }, 2000)
 
           if (hooks.success) await hooks.success(res)
-          if (res.flash) flash(res.flash.message, res.flash.style)
 
           defaults = cloneDeep(this.body)
-          this.reset()
+          if (res.flash) flash(res.flash.message, res.flash.style)
+          if (res.refresh) location.reload()
+          if (res.redirect) location.href = res.redirect
+
+          return res.data
         },
 
-        onError: async (error) => {
+        onError: async (error: any) => {
           this.hasErrors = true
+
+          if (error?.statusCode !== 422 && error?.statusCode !== 401) flash(error.data.title, 'error')
+          if (error?.statusCode === 401) flash('Unauthorized', 'error')
           if (error?.statusCode === 422) {
             this.clearErrors()
             this.setErrors(error.data?.errors)
           }
 
-          if (error?.statusCode !== 422) flash(error.message, 'error')
           if (hooks.error) await hooks.error(error)
+
+          return error
         },
 
         onFinish: async () => {
-          this.processing = false
+          this.loading = false
           if (hooks.finish) await hooks.finish()
         },
       }
 
       await _hooks.onBefore()
 
-      const { data, error, status, clear } = await useFetchApi(path, {
+      return await useFetchApi(path, {
         method,
-        body: this.body,
-        ...options,
+        body: this.body
+      }).then(async (res: any) => {
+        if (res.status.value === 'success') return await _hooks.onSuccess(res.data.value)
+        if (res.status.value === 'error') return await _hooks.onError(res.error.value)
+      }).catch(async (error: any) => {
+        return await _hooks.onError(error.value)
+      }).finally(async () => {
+        await _hooks.onFinish()
       })
-
-      if (status.value === 'error') await _hooks.onError(error.value)
-      if (status.value === 'success') await _hooks.onSuccess(data.value)
-      if (status.value === 'success') clear()
-      if (status.value !== 'pending') await _hooks.onFinish()
     },
 
     reset(...body) {
@@ -83,24 +91,21 @@ export default function useForm(body: any) {
 
       if (body.length === 0) {
         this.body = clonedDefaults
-        return
+      } else {
+        body.forEach((key) => {
+          if (clonedDefaults[key] !== undefined) this.body[key] = clonedDefaults[key]
+        })
       }
-
-      body.forEach((key) => {
-        if (clonedDefaults[key] !== undefined) this.body[key] = clonedDefaults[key]
-      })
     },
 
     clearErrors(...body) {
       if (body.length === 0) {
         this.errors = {}
         this.hasErrors = false
-        return
-      }
 
-      body.forEach((key) => {
-        delete this.errors[key]
-      })
+      } else {
+        body.forEach((key: number) => delete this.errors[key])
+      }
 
       this.hasErrors = Object.keys(this.errors).length > 0
     },

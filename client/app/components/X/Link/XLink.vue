@@ -42,7 +42,7 @@
 
 <template>
     <NuxtLink 
-        class="relative flex justify-center items-center text-lg cursor-pointer" 
+        class="relative flex text-primary-500 hover:text-primary-400 justify-center items-center text-lg cursor-pointer" 
         :class="[
             setColor(color)
         ]"
@@ -56,6 +56,6 @@
 <style scoped>
     /* @ts- */
     .router-link-active {
-        @apply text-active dark:text-active-dark font-extrabold cursor-not-allowed ;
+        @apply text-active dark:text-active-dark cursor-not-allowed;
     }
 </style>

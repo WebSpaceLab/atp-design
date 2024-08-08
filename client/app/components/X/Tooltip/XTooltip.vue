@@ -23,7 +23,7 @@
       'bottom': 'translate-y-4 -translate-x-1/2 left-1/2',
       'top': '-translate-y-[220%] -translate-x-1/2 left-1/2',
       'left': '-translate-x-[120%] top-1/2 -translate-y-1/2',
-      'right': 'translate-x-[120%] top-1/2 -translate-y-1/2',
+      'right': 'translate-x-[80%] top-1/2 -translate-y-1/2',
     }[props.position]
   })
 </script>

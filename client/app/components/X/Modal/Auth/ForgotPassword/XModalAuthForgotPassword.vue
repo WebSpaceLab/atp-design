@@ -1,20 +1,19 @@
 <script setup lang="ts">
-const { togleModalForgetPassword, togleModalForgetPasswordToRegister } = useForgotPasswordStore()
-const { isShowForgotPassword } = storeToRefs(useForgotPasswordStore())
+const {isShowForgotPasswordModal, toggleForgotPasswordModal, toggleRegisterModal } = useModalHelper()
 </script>
 
 <template>
-    <x-btn @click="togleModalForgetPassword(true)" color="primary" variant="link" label=" Do not you remember the password?" />
+    <x-btn @click="toggleForgotPasswordModal" color="primary" variant="link" label=" Do not you remember the password?" />
 
     <x-modal
-        :show="isShowForgotPassword"
+        :show="isShowForgotPasswordModal"
         max-width="2xl"
         :closeable="true"
-        @close="togleModalForgetPassword"
+        @close="toggleForgotPasswordModal"
     >   
         <div class="relative bg-background-light dark:bg-background-dark flex flex-col p-3 border-box space-y-10">
             <div class="absolute top-2 right-2">
-                <XBtnCloseToOpen :switcher="isShowForgotPassword" @click="togleModalForgetPassword(false)" />
+                <XBtnCloseToOpen :switcher="isShowForgotPasswordModal" @click="toggleForgotPasswordModal" />
             </div>
 
             <div class="w-full box-border p-10">
@@ -27,7 +26,7 @@ const { isShowForgotPassword } = storeToRefs(useForgotPasswordStore())
                 </span>
                 
                 <x-btn
-                    @click="togleModalForgetPasswordToRegister()"
+                    @click="toggleRegisterModal"
                     color="danger" 
                     variant="link"
                 >

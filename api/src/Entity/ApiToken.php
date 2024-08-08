@@ -19,7 +19,7 @@ class ApiToken
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $expiresAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'apiToken', cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'apiToken', cascade: ['persist', 'remove'])]
     private ?User $ownedBy = null;
 
     public function getId(): ?int
@@ -38,8 +38,7 @@ class ApiToken
 
         return $this;
     }
-    
-  
+
     public function getExpiresAt(): ?\DateTimeImmutable
     {
         return $this->expiresAt;

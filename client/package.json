@@ -23,13 +23,17 @@
     "pinia": "^2.1.7",
     "ufo": "^1.5.4",
     "uuid": "^10.0.0",
-    "vue": "latest"
+    "vue": "latest",
+    "vue-advanced-cropper": "^2.8.9"
   },
   "devDependencies": {
     "@iconify-json/eos-icons": "^1.1.10",
     "@iconify-json/heroicons": "^1.1.22",
     "@iconify-json/line-md": "^1.1.38",
     "@iconify-json/logos": "^1.1.43",
+    "@iconify-json/material-symbols": "^1.1.85",
+    "@iconify-json/mdi": "^1.1.67",
+    "@iconify-json/teenyicons": "^1.1.9",
     "@nuxt/eslint-config": "^0.3.13",
     "@nuxtjs/color-mode": "^3.4.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",

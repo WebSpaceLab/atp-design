@@ -18,10 +18,11 @@
     },
     label: {
       type: String,
+      default: 'Button',
     },
     icon: {
       type: String,
-      default: ''
+      default: '',
     },
     iconPosition: {
       type: String,
@@ -53,114 +54,11 @@
       validator: function(value: string) {
         // The value must match one of these strings
         return ['button', 'submit', 'reset'].indexOf(value) !== -1;
-      }
+      },
     },
   });
 
-  const ripple = ref(false);
-
-  function setSize(s: string, sq: boolean, b: boolean, v: string) {
-    if(v === 'link') {
-      return {
-        'default': 'text-base font-semibold',
-        'xs': 'text-xs font-semibold',
-        'sm': 'text-sm font-semibold',
-        'md': 'text-md font-semibold',
-        'lg': 'text-lg font-semibold',
-        'xl': 'text-xl font-semibold',
-      }[s];
-    }
-    
-    if (b) {
-      return {
-        'default': 'text-md font-semibold  w-full py-2',
-        'xs': 'text-xs font-semibold  w-full py-2',
-        'sm': 'text-sm font-semibold  w-full py-2',
-        'md': 'text-md font-semibold  w-full py-3',
-        'lg': 'text-lg font-semibold  w-full py-4',
-        'xl': 'text-xl font-semibold  w-full py-4',
-
-      }[s];
-    }
-
-    if (sq) {
-      return {
-        'default': 'text-base font-semibold w-9 h-9',
-        'xs': 'text-xs font-semibold w-7 h-7',
-        'sm': 'text-sm font-semibold w-8 h-8',
-        'md': 'text-md font-semibold w-9 h-9',
-        'lg': 'text-lg font-semibold w-11 h-11',
-        'xl': 'text-xl font-semibold w-12 h-12',
-      }[s];
-    }
-
-    return {
-      'default': 'text-base font-semibold py-2 px-4',
-      'xs': 'text-xs font-semibold py-1 px-2',
-      'sm': 'text-sm font-semibold py-1 px-2',
-      'md': 'text-md font-semibold py-1 px-3',
-      'lg': 'text-lg font-semibold py-2 px-4',
-      'xl': 'text-xl font-semibold py-2 px-4',
-    }[s];
-  }
-
-  function useSizeIcon(s: string) {
-    return {
-      'default': 'text-xl',
-      'xs': 'text-lg',
-      'sm': 'text-lg',
-      'md': 'text-xl',
-      'lg': 'text-2xl',
-      'xl': 'text-2xl',
-    }[s];
-  }
-
-  function setVariant(v: string, c: string, d: boolean) {
-    if (d) {
-      return 'cursor-not-allowed bg-slate-200 text-slate-400';
-    }
-
-    return {
-      'default': useColor(c),
-      'solid': useColor(c),
-      'outline': useColor(c + '-outline'),
-      'link': useColor(c + '-link'),
-      'ghost': useColor(c + '-ghost'),
-      'light': useColor(c + '-light'),
-    }[v];
-  }
-
-  function setRounded(r: string) {
-    return {
-      'default': 'rounded-md',
-      'none': 'rounded-none',
-      'sm': 'rounded-ms',
-      'md': 'rounded-md',
-      'lg': 'rounded-lg',
-      'xl': 'rounded-xl',
-      'full': 'rounded-full',
-    }[r];
-  }
-
-  function setIconPosition(params: string) {
-    return {
-      'default': 'flex-row',
-      'left': 'flex-row',
-      'right': 'flex-row-reverse',
-    }[params];
-  }
-
-  function setColorForRipple(c: string) {
-    return useColor(c + '-ripple');
-  }
-
-  function rippleClick() {
-    ripple.value = !ripple.value;
-
-    setTimeout(() => {
-      ripple.value = !ripple.value;
-    }, 300);
-  }
+  const { ripple, rippleClick, setColorForRipple, setVariant, setSize, setRounded, setIconPosition, useSizeIcon } = useBtnStyles();
 </script>
 
 <template>
@@ -191,7 +89,7 @@
     
     <!-- @vue-ignore -->
     <Icon 
-      v-else 
+      v-if="loading" 
       name="eos-icons:bubble-loading" 
       :class="[
         useSizeIcon(size),
@@ -201,6 +99,7 @@
      />
 
      <slot v-if="!square">{{ label }}</slot>
+     <slot v-else name="img"></slot>
   </button>
 </template>
 

@@ -1,11 +1,23 @@
 <script setup lang="ts">
-const { form, login } = useLoginStore()
+const { form, login } = useAuthStore() as any
+  // const form = useForm({
+  //   email: '',
+  //   password: ''
+  // }) as any  
 
-const canSeeThePassword = ref(false)
+  // const login = async () => {
+  //   form.submit('/api/auth/login','POST', {
+  //     success: () => {
+  //       useModalHelper().toggleLoginModal()
+  //       form.reset()
+  //     },
+  //   })
+  // }
+  const canSeeThePassword = ref(false)
 </script>
 
 <template>
-  <form class="relative w-full h-full flex flex-col" @submite.prevent="login()" >    
+  <form class="relative w-full h-full flex flex-col" @submit.prevent="login(form.body)" >    
     <div class="pt-5 space-y-8">
       <x-input
         v-model="form.body.email"

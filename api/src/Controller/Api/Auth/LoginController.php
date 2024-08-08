@@ -15,13 +15,14 @@ class LoginController extends AbstractAPIController
     #[Route('/api/auth/login', name: 'auth.login', methods: ['POST'])]
     public function login(#[CurrentUser()] User $user = null, ApiTokenHandler $apiTokenHandler): JsonResponse
     {
+        // Check if the user is already logged in and check that the Content-Type header is "application/json"
         if(!$user) {
             return $this->json([
                 'error' => 'Invalid login request: check that the Content-Type header is "application/json".',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        
+        // Check if a user with the given username and email already exists
         if(!$user->getVerificationToken()) {
             return $this->json([
                 'error' => 'The account is not verified. Please check your email.',
@@ -34,40 +35,46 @@ class LoginController extends AbstractAPIController
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Check if the account is active
         if(!$user->isActiveAccount()) {
             return $this->json([
-                'error' => 'The account is not active. ',
+                'error' => 'The account is not active.',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Check if the account is not agree
         if(!$user->isIsAgree()) {
             return $this->json([
                 'error' => 'The account is not agree.',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Check if the account is deleted
         if($user->isIsDelete()) {
             return $this->json([
                 'error' => 'The account is deleted. Please contact the administrator.',
             ], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Create a token for the user
         $apiToken = $apiTokenHandler->createForUser($user);
 
-        $this->flash('Logowanie przebiegło pomyślnie.');
+        // Flash a message to the client
+        $this->flash('Login successful.');
 
         return $this->api([
             'apiToken' => $apiToken,
-            'iri' => $user->getIriFromResource(),
-        ]);
+            'user' => $user,
+        ], ['login']);
     }
 
-    #[Route('/api/auth/logout', name: 'auth.logout', methods: ['POST'])]
-    public function logout(): void
+    #[Route('/api/auth/logout', name: 'auth.logout', methods: ['GET'])]
+    public function logout(): never
     {
         throw new \Exception('Logout failed?'); 
     }
 
+    // Redirected logout
     #[Route('/api/auth/logout', name: 'app_auth_logout_redirected')]
     public function logoutRedirected(): JsonResponse
     {

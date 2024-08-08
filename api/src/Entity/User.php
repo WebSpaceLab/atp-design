@@ -29,13 +29,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank(message: 'Please enter an email address.', groups: ['register'])]
-    #[Assert\Email(groups: ['register'])]
-    #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
+    #[Assert\NotBlank(message: 'Please enter an email address.', groups: ['register', 'profile:write'])]
+    #[Assert\Email(groups: ['register', 'profile:write'])]
+    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['profile:read', 'user:all'])]
+    #[Groups(['login', 'profile:read', 'user:all'])]
     private array $roles = [];
 
     /**
@@ -48,17 +48,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Assert\NotBlank(groups: ['register'])]
-    #[Assert\Length(min: 2, groups: ['register'])]
-    #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
+    #[Assert\NotBlank(groups: ['register', 'profile:write'])]
+    #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
+    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
     private ?string $username = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(min: 2, groups: ['profile:write'])]
     #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write'])]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write', 'article:show', 'admin:article:read'])]
+    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'article:show', 'admin:article:read'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column]
@@ -66,23 +67,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isActiveAccount = false;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
     #[Groups(['profile:read', 'profile:write', 'admin:media:read', 'article:show', 'admin:article:read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
     #[Groups(['profile:read', 'profile:write', 'admin:media:read', 'article:show', 'admin:article:read'])]
     private ?string $lastName = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Article::class)]
-    #[Groups(['profile:read'])]
+    // #[Groups([''])]
     private Collection $articles;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Comment::class)]
-    #[Groups(['profile:read'])]
+    // #[Groups(['profile:read'])]
     private Collection $comments;
-
-    #[ORM\OneToOne(mappedBy: 'ownedBy', cascade: ['persist'])]
-    private ApiToken $apiToken;
 
     #[ORM\OneToOne(mappedBy: 'ownedBy', cascade: ['persist', 'remove'])]
     private VerificationToken $verificationToken;
@@ -107,6 +107,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Gallery::class)]
     private Collection $galleries;
+
+    #[ORM\OneToOne(mappedBy: 'ownedBy', cascade: ['persist', 'remove'])]
+    private ?ApiToken $apiToken = null;
 
     public function __construct()
     {
@@ -212,16 +215,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
+    
     public function getAvatarUrl(): ?string
     {
         $avatarUrl = $this->avatarUrl;
 
         if($avatarUrl) {
-            return $_ENV('APP_URL').$this->avatarUrl;
+            return 'http://127.0.0.1:8000' . $this->avatarUrl;
         }
 
-        return $_ENV('APP_URL') . '/user-placeholder.png';
+        return 'http://127.0.0.1:8000/user-placeholder.png';
     }
 
     public function setAvatarUrl(?string $avatarUrl): static
@@ -327,38 +330,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
    
-    public function getApiToken(): ?ApiToken
+    #[Groups(['login', 'profile:read'])]
+    public function getIri()
     {
-        return $this->apiToken;
+        return '/api/profile/' . $this->getId();
     }
 
-    public function setApiToken(?ApiToken $apiToken): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($apiToken === null && $this->apiToken !== null) {
-            $this->apiToken->setOwnedBy(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($apiToken !== null && $apiToken->getOwnedBy() !== $this) {
-            $apiToken->setOwnedBy($this);
-        }
-
-        $this->apiToken = $apiToken;
-
-        return $this;
-    }
-    
-    #[Groups(['profile:read'])]
-    public function getIriFromResource()
-    {
-        return '/api/user/' . $this->getId();
-    }
-
-    #[Groups(['profile:read'])]
+    #[Groups(['login', 'profile:read'])]
     public function getApiTokenExpiresAt()
     {
-        return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
+        return $this->apiToken->getExpiresAt();
+        // return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
     }
 
 
@@ -550,5 +532,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // zwraca unikalny identyfikator lub inną właściwość encji
         return $this->username;
+    }
+
+    public function getApiToken(): ?ApiToken
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?ApiToken $apiToken): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($apiToken === null && $this->apiToken !== null) {
+            $this->apiToken->setOwnedBy(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($apiToken !== null && $apiToken->getOwnedBy() !== $this) {
+            $apiToken->setOwnedBy($this);
+        }
+
+        $this->apiToken = $apiToken;
+
+        return $this;
     }
 }

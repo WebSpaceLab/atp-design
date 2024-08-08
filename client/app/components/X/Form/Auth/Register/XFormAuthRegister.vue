@@ -1,26 +1,43 @@
 <script setup lang="ts">
-const { form , register } = useRegisterStore()
+  const { form, register } = useRegisterStore() as any
+  // const form = useForm({
+  //   username: '',
+  //   email: '',
+  //   password: '',
+  //   password_confirmation: '',
+  //   isAgree: false,
+  // }) as any
 
-let canSeeThePassword = ref(false)
-let canSeeTheConfirmPassword = ref(false)
+  // // Register the user
+  // const register = async () => {
+  //   form.submit('/api/auth/register','POST', {
+  //     success: () => {
+  //       useModalHelper().toggleRegisterModal()
+  //       form.reset()
+  //     },
+  //   })
+  // }
 
-const isOpenAgreementModel = ref<boolean>(false)
-const lang = ref('en')
+  let canSeeThePassword = ref(false)
+  let canSeeTheConfirmPassword = ref(false)
 
-const optionsSelected = ref([
-  { value: 'en', label: 'English', selected: false },
-  { value: 'pl', label: 'Polish', selected: true }
-])
+  const isOpenAgreementModel = ref<boolean>(false)
+  const lang = ref('en')
 
-function agreement(value: boolean) {
-  form.body.isAgree = value
-  isOpenAgreementModel.value = false
-}
+  const optionsSelected = ref([
+    { value: 'en', label: 'English', selected: false },
+    { value: 'pl', label: 'Polish', selected: true }
+  ])
+
+  function agreement(value: boolean) {
+    form.body.isAgree = value
+    isOpenAgreementModel.value = false
+  }
 </script>
 
 <template>
 <div>
-  <form  class="relative flex flex-col w-full h-full" @submit.prevent="register()">
+  <form  class="relative flex flex-col w-full h-full" @submit.prevent="register(form.body)">
     <div class="pt-5 space-y-8">
       <x-input
         v-model="form.body.username"
@@ -90,7 +107,7 @@ function agreement(value: boolean) {
 
       <div class="w-full space-y-6">
         <x-btn
-          :loading="form.processing"
+          :loading="form.loading"
           type="submit"
           label="Register"
           class="w-full"

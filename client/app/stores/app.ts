@@ -1,24 +1,19 @@
-interface AppState {
-    data: any
-    processing: boolean
-}
+export const useAppStore = defineStore('App', () => {
+    const { $api, $get } = useApi()
+    const app = reactive({
+        name: 'ATP',
+        version: '0.0.7',
+        data: []
+    }) as any
 
-const api = useApi()
 
-export const useAppStore = defineStore('App', {
-    state: (): AppState => {
-        return {
-            data: null as any,
-            processing: false
-        }
-    },
+    async function start() {
+        app.data.push(await $get('/api/app'))
+    }
 
-    actions: {
-        async start() {
-
-            this.data = await api.get('/api/app')
-
-        }
+    return {
+        app,
+        start
     }
 })
 

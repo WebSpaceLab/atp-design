@@ -1,7 +1,9 @@
 <script setup lang="ts">
-  const { $app } = useNuxtApp()
-
-  $app.start()
+  const { start } = useAppStore()
+  
+  onMounted(() => {
+    start()
+  })
 
   useSeoMeta({
     title: 'ATP - Advanced Training Platform',
@@ -14,7 +16,6 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-
     <x-toast />
   </x-app>
 </template>

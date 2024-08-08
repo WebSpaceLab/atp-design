@@ -4,27 +4,15 @@ declare module '#auth-utils' {
     username: string
     avatarUrl: string
     email: string
-    lastName: string
-    firstName: string
+    iri: string
   }
 
   interface UserSession {
     // Add your own fields
-    role: string
+    roles: string
     loggedInAt: Date
+    tokenExpiresAt: Date
   }
 }
 
 export { }
-
-export type AuthModalState = {
-  isOpenRegister: boolean
-  isOpenLogin: boolean
-}
-
-export type AuthErrorBag = {
-  email?: string
-  name?: string
-  password?: string
-  password_confirmation?: string
-}

@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-const { toggleRegister, toggleModalRegisterToLogin } = useRegisterStore()
-const { isShowRegister } = storeToRefs(useRegisterStore())
+const {isShowRegisterModal,  toggleLoginModal, toggleRegisterModal } = useModalHelper()
 </script>
 
 <template>
   <XTooltip text="Register">
-    <XBtn variant="ghost" color="primary" icon="i-line-md-person-add-filled" square @click="toggleRegister(true)" />
+    <XBtn variant="ghost" color="primary" icon="i-line-md-person-add-filled" square @click="toggleRegisterModal" />
   </XTooltip>
 
-  <XModal :show="isShowRegister" :closeable="true" :overflow-hidden="false">
+  <XModal :show="isShowRegisterModal" :closeable="true" :overflow-hidden="false" @close="toggleRegisterModal">
     <div class="w-120  relative flex flex-col justify-center pt-12 px-8 pb-6">
       <div class="absolute top-3 right-4">
-        <XBtnCloseToOpen :switcher="isShowRegister" @click="toggleRegister(false)" />
+        <XBtnCloseToOpen :switcher="isShowRegisterModal" @click="toggleRegisterModal" />
       </div>
 
       <div class="text-center pb-8">
@@ -24,11 +23,11 @@ const { isShowRegister } = storeToRefs(useRegisterStore())
 
           <p>You already have an account?</p>
 
-          <XBtn variant="link" label="Log in" @click="toggleModalRegisterToLogin()" />
+          <XBtn variant="link" label="Log in" @click="toggleLoginModal" />
         </h2>
       </div>
 
-      <XFormAuthRegister :show="isShowRegister" @close="toggleRegister" />
+      <XFormAuthRegister />
     </div>
   </XModal>
 </template>

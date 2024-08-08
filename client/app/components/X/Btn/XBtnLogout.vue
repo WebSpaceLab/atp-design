@@ -1,19 +1,11 @@
 <script lang="ts" setup>
-  // const { clear } = useAuthStore()
-  // const toasts = useToast()
+  let { $get } = useApi()
 
   const logout = async () => {
-    // await clear()
-
-    // navigateTo('/', { replace: true })
-    // toasts.add({
-    //   title: 'Logout',
-    //   description: 'You have been logged out.',
-    //   color: 'primary'
-    // })
+    $get('/api/auth/logout')
   }
 </script>
 
 <template>
-  <XBtn color="primary" variant="solid" icon="i-line-md-log-out" @click="logout" />
+  <XBtn class="z-40" color="primary" variant="solid" icon="i-line-md-log-out"  label="Log Out" block @click="logout" />
 </template>

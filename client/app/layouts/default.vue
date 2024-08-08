@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+  const { loggedIn, user, session, fetch, clear } = useUserSession()
+
   const links = ref([
     {
       label: 'Home',
@@ -49,9 +51,13 @@
         </template>
 
         <template #action>
-          <div class="flex space-x-3">
+          <div v-if="!loggedIn" class="flex space-x-3">
             <XModalAuthLogin/>
             <XModalAuthRegister/>
+          </div>
+
+          <div v-else class="h-full flex items-center justify-center" >
+            <x-dropdown-manage-account v-if="user" :user="user" />
           </div>
 
           <!-- Auth buttons 

@@ -1,7 +1,6 @@
 <script setup>
     const {items, remove} = useToast()
-
-    remove(event);
+    const removeItem = (event) => remove(event);
 </script>
 
 <template>
@@ -18,7 +17,7 @@
         <template v-if="items"  v-for="item in items" :key="item.id">
            <x-toast-item
                 :item="item"
-                @remove="remove"
+                @remove="removeItem"
             />
         </template>
     </TransitionGroup>

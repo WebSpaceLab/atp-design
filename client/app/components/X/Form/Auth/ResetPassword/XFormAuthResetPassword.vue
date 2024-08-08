@@ -1,19 +1,13 @@
 <script setup>
-const route = useRoute()
-
-const form = ref({
-    token: route.params.token,
-    email: route.query.email,
-    password: '',
-    password_confirmation: '',
-})
+const { form } =  storeToRefs(useResetPasswordStore()) 
+const { resetPassword } = useResetPasswordStore()
 
 let canSeeThePassword = ref(false)
 let canSeeTheConfirmPassword = ref(false)
 </script>
 
 <template>
-    <form class="relative w-100 h-full flex flex-col" @submit.prevent="$auth.resetPassword(form)">
+    <form class="relative w-100 h-full flex flex-col" @submit.prevent="resetPassword">
         <span class="w-full h-full text-basic-light dark:text-basic-dark flex flex-col justify-center items-center">
 
             <div class="text-2xl md:text-3xl mb-4 font-bold">Utwórz nowe hasło</div>

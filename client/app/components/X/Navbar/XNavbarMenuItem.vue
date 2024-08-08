@@ -7,13 +7,10 @@
 
   })
 
-  const emits = defineEmits(['closeMobile'])
+  const { closeMobile } = useNavbar()
 
   const open = ref(false)
 
-  const closeMobile = () => {
-    emits('closeMobile', false)
-  }
 </script>
 
 <template>
