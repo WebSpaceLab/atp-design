@@ -1,17 +1,16 @@
 declare module '#auth-utils' {
   interface User {
     // Add your own fields
-    username: string
-    avatarUrl: string
-    email: string
-    iri: string
+    // username: string
+    // avatarUrl: string
+    // email: string
+    // iri: string
   }
 
   interface UserSession {
     // Add your own fields
-    roles: string
+    iri: string
     loggedInAt: Date
-    tokenExpiresAt: Date
   }
 }
 

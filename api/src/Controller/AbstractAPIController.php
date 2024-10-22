@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -97,6 +98,15 @@ abstract class AbstractAPIController extends AbstractController
         }
 
         return null;
+    }
+
+    public function validated(mixed $value = null, mixed $data = null)
+    {
+        $constraints = new Assert\Collection($value);
+
+        $violations = $this->validator->validate($data, $constraints);
+
+        return $this->validate($violations);
     }
 
     

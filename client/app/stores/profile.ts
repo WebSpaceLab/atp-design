@@ -1,68 +1,64 @@
-export const useProfileStore = defineStore('Profile', () => {
-  const { $get, $patch, errors, loading } = useApi()
-  // const { session, user } = useUserSession()
-
-  const form = reactive({
-    loading: false,
-    errors: [],
-    body: {
-      username: '',
-      email: '',
-      firstName: '',
-      lastName: '',
-      bio: '',
+export const useProfileStore = defineStore('Profile', {
+  state: () => {
+    return {
+      body: {
+        avatarUrl: '',
+        username: '',
+        email: '',
+        firstName: '',
+        lastName: '',
+        bio: ''
+      },
+      loading: true
     }
-  })
+  },
+  actions: {
+    async get() {
+      this.loading = true
 
-  const user = ref({})
+      await useApi().get(useAuthStore().session.iri).then((res: any) => {
+        return this.updateBody(res.user)
+      }).finally(() => {
+        this.loading = false
+      })
+    },
 
-  async function me(iri: string) {
-    user.value = await $get(iri).then((res) => {
-      return res.user
-    })
+    async update(form: any) {
+      form.submit(useAuthStore().session.iri, 'PATCH', {
+        success: (res: any) => {
+          this.updateBody(res.data.user)
+        }
+      })
+    },
 
-    updateUserToForm(user.value)
-  }
+    async updatePassword(form: any) {
+      form.submit(`${useAuthStore().session.iri}/update-password`, 'PATCH', {
+        success: () => {
+          form.reset()
+        }
+      })
+    },
 
-  const update = async (iri: string, body: any) => {
-    user.value = await $patch(iri, body).then((res) => {
-      console.log('res', res)
-      return res.user
-    })
+    async avatarUrlUpdate(body: any, progress: any) {
+      const res = await useUploader().upload(useAuthStore().session.iri + '/avatar-update', body, progress).then((res: any) => {
+        return res.data.user
+      }) as any
 
-    updateUserToForm(user.value)
-  }
+      this.updateBody(res)
+      useAuthStore().init()
+    },
 
-  const updatePassword = async (iri: string, form: any) => {
-    form.submit(`${iri}/update-password`, 'PATCH', {
-      success: () => {
-        form.reset()
-      }
-    })
-  }
-
-  const updateUserToForm = (user: any) => {
-    form.body.username = user.username
-    form.body.email = user.email
-    form.body.firstName = user.firstName
-    form.body.lastName = user.lastName
-    form.body.bio = user.bio
-  }
-
-  watch(loading.value, (value) => {
-    form.loading = value
-  })
-
-  watch(errors, async (value) => {
-    // console.log('errors', value)
-    form.errors = await value
-  })
-
-  return {
-    me,
-    form,
-    user,
-    update,
-    updatePassword
+    updateBody(user: any) {
+      this.body.avatarUrl = user.avatarUrl
+      this.body.username = user.username
+      this.body.email = user.email
+      this.body.firstName = user.firstName
+      this.body.lastName = user.lastName
+      this.body.bio = user.bio
+    }
   }
 })
+
+// if (import.meta.hot) {
+//   import.meta.hot.accept(acceptHMRUpdate(useProfileStore, import.meta.hot))
+// }

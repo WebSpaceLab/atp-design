@@ -30,7 +30,7 @@ class UploaderHelper
         return 'https://www.youtube.com/embed/' . $videoId;
     }
 
-    public function selectUrlKeyUsingType(mixed $data): mixed
+    public function selectUrlKeyUsingType(mixed $data)
     {
         switch ($data['type']) {
             case "video/youTube":

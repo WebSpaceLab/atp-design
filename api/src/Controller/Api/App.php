@@ -5,6 +5,8 @@ namespace App\Controller\Api;
 use App\Controller\AbstractAPIController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Intervention\Image\ImageManager;
+use Symfony\Component\HttpFoundation\Response;
 
 class App extends AbstractAPIController
 {
@@ -16,6 +18,14 @@ class App extends AbstractAPIController
         return $this->api([
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/App.php',
+        ]);
+    }
+
+    #[Route('/')]
+    public function example(ImageManager $manager): Response
+    {
+        return $this->render('/homepage/index.html.twig',[
+            // 'image' => $image,
         ]);
     }
 }

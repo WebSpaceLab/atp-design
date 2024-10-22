@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\Auth;
 
+use ApiPlatform\Metadata\IriConverterInterface as MetadataIriConverterInterface;
 use App\Controller\AbstractAPIController;
 use App\Entity\User;
 use App\Security\ApiTokenHandler;
@@ -13,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class LoginController extends AbstractAPIController
 {
     #[Route('/api/auth/login', name: 'auth.login', methods: ['POST'])]
-    public function login(#[CurrentUser()] User $user = null, ApiTokenHandler $apiTokenHandler): JsonResponse
+    public function login(#[CurrentUser()] User $user = null, ApiTokenHandler $apiTokenHandler, MetadataIriConverterInterface $iriConverter): JsonResponse
     {
         // Check if the user is already logged in and check that the Content-Type header is "application/json"
         if(!$user) {
@@ -36,7 +37,7 @@ class LoginController extends AbstractAPIController
         }
 
         // Check if the account is active
-        if(!$user->isActiveAccount()) {
+        if(!$user->isIsActiveAccount()) {
             return $this->json([
                 'error' => 'The account is not active.',
             ], Response::HTTP_UNAUTHORIZED);
@@ -64,8 +65,9 @@ class LoginController extends AbstractAPIController
 
         return $this->api([
             'apiToken' => $apiToken,
-            'user' => $user,
-        ], ['login']);
+            'apiTokenExpiresAt' => $user->getApiToken()->getExpiresAt(),
+            'Location' => '/api/users/' . $user->getId(),
+        ]);
     }
 
     #[Route('/api/auth/logout', name: 'auth.logout', methods: ['GET'])]
@@ -82,4 +84,5 @@ class LoginController extends AbstractAPIController
 
         return $this->api([]);
     }
+
 }

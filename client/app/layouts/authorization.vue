@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 const { sidebar } = useSidebar()
-const { openSearchModal } = useSearch()
-const { user } = useUserSession()
+const { session } = storeToRefs(useAuthStore())
 
+let query = ref('')
 </script>
 
 <template>
@@ -18,14 +18,16 @@ const { user } = useUserSession()
           </div>
         </template>
 
-        <template #content/>
-
+        <template #content>
+          <div class="flex justify-center items-center">
+            <h1 class="text-2xl font-bold">Authorization</h1>
+          </div>
+        </template>
+        
         <template #action>
-          <XTooltip text="Search" position="bottom">
-            <XBtn @click="openSearchModal()" color="primary" variant="ghost" square icon="i-line-md-search" />
-          </XTooltip>
 
-          <XDropdownManageAccount v-if="user" :user="user" />
+
+          <XDropdownManageAccount v-if="session" :user="session.user" />
         </template>
       </XDashboardNavbar>
     </template>

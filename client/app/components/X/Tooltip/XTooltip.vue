@@ -24,6 +24,10 @@
       'top': '-translate-y-[220%] -translate-x-1/2 left-1/2',
       'left': '-translate-x-[120%] top-1/2 -translate-y-1/2',
       'right': 'translate-x-[80%] top-1/2 -translate-y-1/2',
+      'bottom-left': 'translate-y-4 left-0',
+      'bottom-right': 'translate-y-4 right-0',
+      'top-left': '-translate-y-[220%] left-0',
+      'top-right': '-translate-y-[220%] right-0',
     }[props.position]
   })
 </script>

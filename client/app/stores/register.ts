@@ -1,35 +1,27 @@
-
-
-export const useRegisterStore = defineStore('Register', () => {
-  const { $post, loading, errors } = useApi()
-
-  const form = reactive({
-    loading: false,
-    errors: [],
-    body: {
-      username: '',
-      email: '',
-      password: '',
-      password_confirmation: '',
+export const useRegisterStore = defineStore('Register', {
+  state: () => ({
+    form: {
+      loading: false,
+      errors: [],
+      body: {
+        username: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+      }
     }
-  }) as any
+  }),
 
-  // Register the user
-  const register = async (body: any) => {
-    await $post('/api/auth/register', body)
-  }
-
-  watch(loading.value, (value) => {
-    form.loading = value
-  })
-
-  watch(errors, async (value) => {
-    // console.log('errors', value)
-    form.errors = await value
-  })
-
-  return {
-    form,
-    register
+  actions: {
+    async register(body: any) {
+      this.form.loading = true
+      await useApi().post('/api/auth/register', body).then(() => {
+        navigateTo('/login')
+      }).catch((err: any) => {
+        this.form.errors = err.response.data.errors
+      }).finally(() => {
+        this.form.loading = false
+      })
+    }
   }
 })

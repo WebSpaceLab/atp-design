@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  const { user } = useUserSession() as any
   const {updatePassword} = useProfileStore()
 
   const canSeeThePassword = ref(false)
@@ -45,7 +44,7 @@
 </script>
 
 <template>
-  <form class="space-y-6" @submit.prevent="updatePassword(user.iri, form)">
+  <form class="space-y-6" @submit.prevent="updatePassword(form)">
     <x-input
       v-model="form.body.current_password"
       :type="canSeeTheCurrentPassword ? 'text' : 'password'"

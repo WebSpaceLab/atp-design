@@ -10,7 +10,7 @@
       color="primary" 
       variant="ghost" 
       square
-      :icon="$colorMode.value == 'dark' ? 'line-md:moon-filled-loop' : 'line-md:moon-filled-to-sunny-filled-loop-transition'"
+      :icon="$colorMode.value == 'dark' ? 'i-line-md-moon-filled-loop' : 'i-line-md-moon-filled-to-sunny-filled-loop-transition'"
       @click="setColorTheme($colorMode.preference == 'dark' ? 'light' : 'dark')" 
     />
   </XTooltip>

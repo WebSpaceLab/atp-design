@@ -2,11 +2,15 @@
   const { sidebar } = useSidebar()
 
   defineProps({
-  container: {
-    type: Boolean,
-    default: false,
-  }
-});
+    container: {
+      type: Boolean,
+      default: false,
+    },
+    loading: {
+      type: Boolean,
+      default: true,
+    },
+  });
 
   const isShowSettingsSidebar = ref(false)
 
@@ -55,7 +59,21 @@
     </XDashboardPageHeader>
 
     <div class="w-full px-4  lg:px-6 box-border transition-all duration-500" :class="sidebar.isShowHelperBar ? 'mt-36' : 'mt-20'">
-      <slot name="main" />
+      
+      <transition
+        enter-active-class="transition ease-out duration-600"
+        enter-from-class="transform  opacity-0 "
+        enter-to-class="transform opacity-100"
+        leave-active-class="transition ease-in duration-300"
+        leave-from-class="transform  opacity-100"
+        leave-to-class="transform opacity-0"
+      >
+        <div v-if="!loading">
+          <slot name="main" />
+        </div>
+
+        <XLoadingPage v-else :loading="loading" />
+      </transition>
     </div>
 
     <div

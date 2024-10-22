@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-  let { $get } = useApi()
-
   const logout = async () => {
-    $get('/api/auth/logout')
+    await useAuthStore().logout()
   }
 </script>
 

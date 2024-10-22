@@ -18,12 +18,12 @@ watch(() => sidebar.isRail, (event) => {
 </script>
 
 <template>
-  <li class="w-full  ease-in list-none">
+  <li class="w-full ease-in list-none text-primary-600">
     <XLink
       v-if="!link?.children?.length"
       :class="sidebar.isRail ? '' : 'overflow-hidden'"
       :to="{path: link.to }"
-      class="h-10 w-full flex decoration-none rounded"
+      class="h-10 w-full flex decoration-none rounded text-primary-600"
     >
       <div class="w-10">
         <Icon class="text-2xl" :name="link.icon"/>
@@ -39,10 +39,9 @@ watch(() => sidebar.isRail, (event) => {
         :to="{ path: link.to }"
         :class="[
             sidebar.isRail ? '' : 'overflow-hidden',
-            open ? 'font-semibold text-blue-600' : 'font-medium hover:text-hover-200'
+            open ? 'font-semibold text-primary-600' : 'font-medium hover:text-hover-200'
         ]"
         class="flex justify-between items-center cursor-pointer decoration-none h-10 w-full rounded"
-
       >
         <div v-if="!sidebar.isRail" class="flex items-start transition-all duration-500">
           <div  class="flex justify-start w-10 items-center">
@@ -61,7 +60,7 @@ watch(() => sidebar.isRail, (event) => {
 
         <Icon
           v-else
-          :class="open ? 'rotate-90 text-blue-600' : 'fa-rotate-0 text-muted-light dark:text-muted-dark hover:text-hover-200'"
+          :class="open ? 'rotate-90 text-primary-600' : 'fa-rotate-0 text-primary-500 hover:text-hover-200'"
           class="text-2xl transition-all duration-200 ease-in"
           name="material-symbols:play-arrow-outline"
           @click="open = !open"

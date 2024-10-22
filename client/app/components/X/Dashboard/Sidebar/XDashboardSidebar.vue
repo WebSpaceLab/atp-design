@@ -1,6 +1,6 @@
 <script setup lang="ts">
   const { sidebar } = useSidebar()
-  const { user } = useUserSession()
+  const { me } = storeToRefs(useAuthStore())
 
   function typeLinks(type: string) {
     const links = [] as any
@@ -42,8 +42,8 @@
           <div class="w-full h-full flex flex-col justify-between">
             <div
               class="w-full flex flex-col mt-10 bg-secondary dark:bg-secondary-dark backdrop-blur shadow-xl shadow-black rounded-lg">
-              <div class="w-full flex justify-center items-center py-5">
-                <XAvatar :src="user?.avatarUrl" alt="Avatar" :size="sidebar.isRail ? 'md' : 'xl'"
+              <div v-if="me" class="w-full flex justify-center items-center py-5">
+                <XAvatar :src="me?.avatarUrl" alt="Avatar" :size="sidebar.isRail ? 'md' : 'xl'"
                   class="transition duration-500" />
               </div>
 

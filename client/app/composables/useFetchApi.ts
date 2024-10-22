@@ -1,15 +1,15 @@
 export function useFetchApi(path: string, options: any = { headers: {} }) {
   const config = useRuntimeConfig()
-  const token: string | any = useCookie('Api-Token')
+  const token: string | any = useAuthStore().session.token
 
   let headers: any = {
-    accept: "application/json",
-    "Content-Type": "application/json",
+    // accept: "application/ld+json",
+    "Content-Type": "application/merge-patch+json",
     referer: config.public.appUrl,
   }
 
-  if (token.value) {
-    headers['Authorization'] = 'Bearer ' + token.value
+  if (token) {
+    headers['Authorization'] = 'Bearer ' + token
   }
 
   // if (import.meta.server) {

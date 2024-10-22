@@ -1,12 +1,12 @@
-<script setup>
-    const props = defineProps({
+<script setup lang="ts">
+    let props = defineProps({
         label: {
             type: String,
             default: 'Label'
         },
         color: {
             type: String,
-            default: 'blue'
+            default: 'defualt'
         },
         placeholder: {
             type: Boolean,
@@ -50,42 +50,64 @@
         },
         maxlength: {
             type: Number,
-            default: 0
+            default: 256
         },
         error: {
             type: String,
-            default: ''
+            default: '' as string
         },
         name: {
             type: String,
-            default: 'floating_outlined_text'
+            default: 'floating_text'
+        },
+        size: {
+            type: String,
+            default: 'md' // Możliwe wartości: 'xs', 'sm', 'md', 'lg', 'xl'
         }
     })
 
-    const emits = defineEmits([
+    let emits = defineEmits([
         'update:modelValue'
     ])
 
-    const inputColor = computed(() => {
+    function setInputColor(c: string) {
         return {
-            'blue': 'text-blue-500 focus:text-blue-600 border-solid border-blue-500 focus:border-blue-600 placeholder-blue-600',
-            'red': 'text-red-500 focus:text-red-600 border-solid border-red-500 focus:border-red-600 placeholder-red-600',
-            'green': 'text-green-500 focus:text-green-600 border-solid border-green-500 focus:border-green-600 placeholder-green-600',
-            'info': 'text-info focus:text-info border-solid border-info focus:border-info placeholder-info',
-            'error': 'text-error focus:text-error border-solid border-error focus:border-error placeholder-error',
-            'success': 'text-success focus:text-success border-solid border-success focus:border-success placeholder-success',
-        }[props.color]
-    })
+            'default': 'text-slate-500 focus:text-blue-700 dark:focus:text-blue-400 border-solid border-slate-500 focus:border-blue-600 placeholder-slate-600 focus:ring-blue-600',
+            'error': 'text-error-600 focus:text-error-600 border-solid border-error-600 focus:border-error-600 placeholder-error-600 focus:ring-error-600',
+            'success': 'text-success-600 focus:text-success-600 border-solid border-success-600 focus:border-success-600 placeholder-success-600 focus:ring-success-600',
+        }[c];
+    }
 
-    const labelColor = computed(() => {
+    function setLabelColor(c: string) {
         return {
-            'blue': 'peer-focus:text-blue-600 peer-focus:dark:text-blue-500',
-            'red': 'peer-focus:text-red-600 peer-focus:dark:text-red-500',
-            'green': 'peer-focus:text-green-600 peer-focus:dark:text-green-500',
-            'info': 'text-info-600  peer-focus:text-info-600',
+            'default': 'text-slate-500 peer-focus:text-blue-600 peer-focus:dark:text-blue-500',
             'error': 'text-error-600 peer-focus:text-error-600',
             'success': 'text-success-600 peer-focus:text-success-600',
-        }[props.color]
+        }[c];
+    }
+
+    const setSizeClass = computed(() => {
+        return {
+            'xs': 'px-1.5 py-1 text-xs',
+            'sm': 'px-2 py-1.5 text-sm',
+            'md': 'px-2.5 py-2 text-base',
+            'lg': 'px-3 py-2.5 text-lg',
+            'xl': 'px-3.5 py-3 text-xl',
+        } [props.size]
+    })
+
+    const error = ref(props.error)
+    const color = ref(props.color)
+
+    watch(() => props.modelValue, (value) => {
+        if(value.length === props.maxlength) {
+            console.log('value', value)
+            error.value = `The maximum number of characters is ${props.maxlength}`
+            color.value = 'error'
+        } else {
+            error.value = ''
+            color.value = 'default'
+        }
     })
 </script>
 
@@ -100,25 +122,46 @@
             <slot name="right-icon"></slot>
         </div>
 
-        <textarea :id="name" :value="modelValue"
-            :class="[inputColor, icon & iconPosition === 'left' ? 'pl-10' : 'pl-3', validatedType ? validatedType : '']"
-            :placeholder="placeholder ? label : ''"
-            class="block rounded-lg box-border px-2.5 pb-2.5 pt-5 w-full text-md text-slate-900 bg-background dark:bg-background-dark border border-slate-500 appearance-none dark:text-basic-500 dark:border-slate-600 focus:outline-none focus:ring-0 peer"
-            :name="name" :required="required" :autofocus="autofocus" :cols="cols" :rows="rows" :maxlength="maxlength"
-            @input="event => emits('update:modelValue', event.target.value)" />
+        <label class="block relative w-full">
+            <textarea 
+                :value="modelValue"
+                :class="[setInputColor(color), setSizeClass]"
+                class="block rounded-lg w-full text-md decoration-none appearance-none border peer borde-2 bg-background dark:bg-background-dark focus:outline-none focus:ring-0 peer"
+                :name="name"
+                :placeholder="label"
+                :required="required" 
+                :autofocus="autofocus"
+                :cols="cols" 
+                :rows="rows" 
+                :maxlength="maxlength"
+                @input="event => emits('update:modelValue', (event?.target as HTMLTextAreaElement)?.value)" 
+            />
 
-        <label :for="name"
-            :class="[labelColor, icon & iconPosition === 'left' ? 'translate-x-8 peer-focus:translate-x-8' : '', validatedType ? validatedType : '']"
-            class="absolute text-sm text-gray-800 dark:text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] left-2.5  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 ">
-            {{ label }}
+            <span 
+                :class="[
+                    setLabelColor(color),
+                    setSizeClass
+                ]"
+                class="absolute text-sm duration-500 opacity-0 peer-focus:opacity-100 transform -translate-y-9  py-1 scale-90 top-2 z-10 origin-[0] left-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-90 peer-focus:-translate-y-9"
+            >
+                {{ label }}
+            </span>
         </label>
 
-        <div v-if="modelValue && maxlength" class="text-[11px] text-gray-500">{{ modelValue?.length }}/{{ maxlength }}
+        <div 
+            v-if="modelValue && maxlength" 
+            class="text-[11px] p-0" 
+            :class="{
+                'text-error-600': modelValue.length === maxlength,
+                'text-success-600': modelValue.length !== maxlength
+            }"
+        >
+            {{ modelValue?.length }}/{{ maxlength }}
         </div>
 
         <div v-if="error"
-            class="w-full text-center text-error-300 text-[14px] font-semibold bg-error-900 p-1 box-border mt-1 rounded">
-            {{ error }}
+            class="w-full duration-500 text-center text-error-600 text-sm font-semibold bg-error-900 p-1 box-border mt-1 rounded">
+            <p>{{ error }}</p>
         </div>
     </div>
 </template>

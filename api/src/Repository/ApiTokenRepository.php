@@ -21,7 +21,7 @@ class ApiTokenRepository extends ServiceEntityRepository
 
     public function setApiTokenWithExpiration(string $token, User $user, ?DateInterval $tokenLifetime = null, bool $flush = false): void
     {
-        if ($user->getApiToken() && $user->isIsAgree() && $user->isActiveAccount() && $user->isIsDelete() === false) {
+        if ($user->getApiToken() && $user->isIsAgree() && $user->isIsActiveAccount() && $user->isIsDelete() === false) {
             $user->getApiToken()->setToken($token);
     
             if ($tokenLifetime !== null) {

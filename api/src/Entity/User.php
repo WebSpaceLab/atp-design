@@ -2,6 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use App\Repository\UserRepository;
 use App\Trait\Timestamps;
 use Carbon\Carbon;
@@ -13,11 +22,44 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\HasLifecycleCallbacks()]
+// #[ApiResource(
+//     operations: [
+//         new Get(
+//             normalizationContext: ['groups' => ['user:auth']],
+//         ),
+//         new Post(
+//             uriTemplate: '/users',
+//             input: User::class,
+//             output: User::class,
+//             normalizationContext: ['groups' => ['user:read']],
+//             denormalizationContext: ['groups' => ['user:create']],
+//         ),
+//         new GetCollection(
+//             uriTemplate: '/users',
+//             normalizationContext: ['groups' => ['user:read']],
+//         ),
+//         new Get(
+//             uriTemplate: '/users/{id}/profile',
+//             normalizationContext: ['groups' => ['profile:read']],
+
+//         ),
+//         new Patch(
+//             uriTemplate: '/users/{id}/profile/update',
+//             normalizationContext: ['groups' => ['profile:read']],
+//             denormalizationContext: ['groups' => ['profile:write']],
+//         ),
+//     ],
+// )]
+
+// #[ApiFilter(SearchFilter::class, properties: ['username' => 'partial', 'email' => 'exact'])]
+// #[ApiFilter(DateFilter::class, properties: ['createdAt', 'updatedAt'])]
+// #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'updatedAt'], arguments: ['orderParameterName' => 'order'])]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\HasLifecycleCallbacks()]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use Timestamps;
@@ -25,17 +67,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['profile:read', 'user:all',"gallery:read", "gallery:write", 'admin:article:read'])]
+    #[Groups(['user:read'])]
     private ?int $id = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read','profile:read', 'user:auth'])]
+    private ?string $avatarUrl = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: 'Please enter an email address.', groups: ['register', 'profile:write'])]
     #[Assert\Email(groups: ['register', 'profile:write'])]
-    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
+    #[Groups(['user:read','profile:read', 'user:auth'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups(['login', 'profile:read', 'user:all'])]
+    #[Groups(['user:read','profile:read', 'user:auth'])]
     private array $roles = [];
 
     /**
@@ -50,38 +96,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(groups: ['register', 'profile:write'])]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'admin:media:read', 'article:show', "gallery:read", "gallery:write", 'admin:article:read'])]
+    #[Groups(['user:read','profile:read', 'user:auth'])]
     private ?string $username = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\Length(min: 2, groups: ['profile:write'])]
-    #[Groups(['profile:read', 'user:all', 'article:read', 'profile:write'])]
-    private ?string $bio = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['login', 'profile:read', 'user:all', 'article:read', 'profile:write', 'article:show', 'admin:article:read'])]
-    private ?string $avatarUrl = null;
-
-    #[ORM\Column]
-    #[Groups(['user:all'])]
-    private ?bool $isActiveAccount = false;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['profile:read', 'profile:write', 'admin:media:read', 'article:show', 'admin:article:read'])]
+    #[Groups(['user:read','profile:read', 'profile:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['profile:read', 'profile:write', 'admin:media:read', 'article:show', 'admin:article:read'])]
+    #[Groups(['user:read','profile:read', 'profile:write'])]
     private ?string $lastName = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(min: 2, groups: ['profile:write'])]
+    #[Groups(['user:read', 'profile:read', 'profile:write'])]
+    private ?string $bio = null;
+
+    #[ORM\Column]
+    #[Groups(['user:read'])]
+    private ?bool $isActiveAccount = false;
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message: 'Consent is required.', groups: ['register'])]
+    #[Assert\Type(type: 'bool', groups: ['register'])]
+    #[Groups(['user:read'])]
+    private ?bool $isAgree = false;
+
+    #[ORM\Column]
+    #[Groups(['user:read'])]
+    private ?bool $isDelete = false;
+
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Article::class)]
-    // #[Groups([''])]
     private Collection $articles;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Comment::class)]
-    // #[Groups(['profile:read'])]
     private Collection $comments;
 
     #[ORM\OneToOne(mappedBy: 'ownedBy', cascade: ['persist', 'remove'])]
@@ -90,20 +140,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'ownedBy', targetEntity: ResetPasswordToken::class)]
     private Collection $resetPasswordTokens;
 
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Consent is required.', groups: ['register'])]
-    #[Assert\Type(type: 'bool', groups: ['register'])]
-    #[Groups(['user:all'])]
-    private ?bool $isAgree = false;
-
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Media::class)]
     private Collection $media;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Inbox::class)]
     private Collection $inboxes;
-
-    #[ORM\Column]
-    private ?bool $isDelete = false;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Gallery::class)]
     private Collection $galleries;
@@ -234,7 +275,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isActiveAccount(): ?bool
+    public function isIsActiveAccount(): ?bool
     {
         return $this->isActiveAccount;
     }
@@ -329,28 +370,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-   
-    #[Groups(['login', 'profile:read'])]
-    public function getIri()
-    {
-        return '/api/profile/' . $this->getId();
-    }
 
-    #[Groups(['login', 'profile:read'])]
+    #[Groups(['user:auth'])]
     public function getApiTokenExpiresAt()
     {
-        return $this->apiToken->getExpiresAt();
-        // return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
+        // return $this->apiToken->getExpiresAt();
+        return Carbon::instance($this->apiToken->getExpiresAt())->toDateTimeString();
     }
 
 
-    #[Groups(['profile:read', 'user:all'])]
+    #[Groups(['profile:read', 'user:read'])]
     public function getCreatedAtAgo(): ?string
     {
         return  Carbon::instance($this->createdAt)->diffForHumans();
     }
 
-    #[Groups(['profile:read', 'user:all'])]
+    #[Groups(['profile:read', 'user:read'])]
     public function getUpdatedAtAgo(): ?string
     {
         $updatedAtAgo = $this->updatedAt;

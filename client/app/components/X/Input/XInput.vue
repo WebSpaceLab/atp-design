@@ -105,15 +105,22 @@
             </div>
 
             <label class="block relative w-full">
-                <input :value="modelValue"
+                <input 
+                    :value="modelValue"
                     class="block rounded-lg w-full text-md decoration-none appearance-none border peer borde-2 bg-background dark:bg-background-dark focus:outline-none focus:ring-0 peer"
                     :class="[
                         setInputColor(color),
                         icon !== '' && iconPosition === 'left' ? 'pl-10' : 'pl-3',
                         setSizeClass
-                    ]" :placeholder="label" :name="name" :type="type" :required="required"
-                    :autocomplete="autocomplete ? 'on' : 'off'" :autofocus="autofocus"
-                    @input="event => emits('update:modelValue', (event?.target as HTMLInputElement)?.value)">
+                    ]" 
+                    :placeholder="label" 
+                    :name="name" 
+                    :type="type" 
+                    :required="required"
+                    :autocomplete="autocomplete ? 'on' : 'off'" 
+                    :autofocus="autofocus"
+                    @input="event => emits('update:modelValue', (event?.target as HTMLInputElement)?.value)"
+                >
 
                 <span :class="[
                     setLabelColor(color),

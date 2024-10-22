@@ -1,29 +1,25 @@
 <script lang="ts" setup>
-  // definePageMeta({
-  //   layout: "default",
-  // })
+  definePageMeta({
+    layout: "default",
+  })
 
-  const { loggedIn, user, session, fetch, clear } = useUserSession()
-  const { app } = storeToRefs(useAppStore())
+  const { name, version } = storeToRefs(useAppStore())
 </script>
 
 <template>
   <div>
     <h1 class="text-2xl">Home Page</h1>
 
-    <pre>
-      {{app }}
-<div>
-User {{ user }}
-<div>
-session: {{ session }}  
+    <p class="m-3">
+      This is the home page of the <strong>{{ name }}</strong> app.
+    </p>
 
-</div>
-loggedIn: {{ loggedIn }}
-</div>
-    </pre>
+    <p class="m-3">
+      Version: <strong>{{ version }}</strong>
+    </p>
 
-    <div class="w-full h-screen"/>
+    <p class="m-3">
+      <nuxt-link to="/about">Go to the About page</nuxt-link>
+    </p>
   </div>
-  
 </template>

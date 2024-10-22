@@ -6,8 +6,8 @@ export default defineEventHandler(async (event) => {
   const target = joinURL(url, path)
 
   setCookie(event, 'Api-Token', '')
-
-  await clearUserSession(event)
+  setCookie(event, 'iri', '')
+  setCookie(event, 'loggedIn', '')
 
   try {
     await $fetch(target, {

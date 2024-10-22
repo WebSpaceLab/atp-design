@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  const { loggedIn, user, session, fetch, clear } = useUserSession()
+  const { session } = useAuthStore()
 
   const links = ref([
     {
@@ -51,13 +51,13 @@
         </template>
 
         <template #action>
-          <div v-if="!loggedIn" class="flex space-x-3">
+          <div v-if="!session.loggedIn" class="flex space-x-3">
             <XModalAuthLogin/>
             <XModalAuthRegister/>
           </div>
 
           <div v-else class="h-full flex items-center justify-center" >
-            <x-dropdown-manage-account v-if="user" :user="user" />
+            <x-dropdown-manage-account v-if="session.user" :user="session.user" />
           </div>
 
           <!-- Auth buttons 

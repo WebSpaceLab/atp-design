@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  const { start } = useAppStore()
+  const app = useAppStore()
   
   onMounted(() => {
-    start()
+    app.start()
   })
 
   useSeoMeta({

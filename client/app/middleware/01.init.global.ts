@@ -1,32 +1,32 @@
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    const { toggleLoginModal } = useModalHelper()
-    const { loggedIn, session, clear } = useUserSession()
+    const { session } = useAuthStore()
 
     const today = new Date();
-    // const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    // const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    // const dateTime = date + ' ' + time;
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    const dateTime = date + ' ' + time;
 
     if (to.query.verified) {
-        toggleLoginModal()
+        useModalHelper().showLoginModal()
         // $auth.response = {
-        //     status: 'Rejestracja przeszła pomyślnie. Możesz się teraz zalogować.'
+        //     status: 'Registration was successful. You can log in now.'
         // }
     }
 
     if (!import.meta.server) {
-        if (session.value.tokenExpiresAt < today) {
-            // const { flash } = useToast()
-            const { $get } = useApi()
-            console.log('token expired')
-            clear()
-            $get('/api/auth/logout')
-            // flash
+        if (session.loggedIn) {
+            if (session.tokenExpiresAt > dateTime) {
+                if (!session.token) {
+                    useAuthStore().logout('Please login.')
+                } else {
+                    await useAuthStore().init()
+                    console.log('session.loggedIn', session.loggedIn)
+                    console.log('session.tokenExpiresAt', session.tokenExpiresAt)
+                }
+            } else {
+                useAuthStore().logout('Your session has expired. Please log in again.')
+            }
         }
-        // TODO - jeżeli jest error 401 to wyloguj
-        // if ($auth.token === null) {
-        //     $auth.logout()
-        // }
     }
 })

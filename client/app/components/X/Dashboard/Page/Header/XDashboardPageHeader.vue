@@ -35,7 +35,7 @@ onMounted(() => {
             class="z-20 fixed top-20 w-full flex flex-col md:flex-row pl-4 pr-6 space-y-2 justify-between items-end box-border rounded-xl transition-all duration-500"
         >
             <div class="h-full hidden md:block  -translate-x-2 translate-y-3">
-              <UBreadcrumb :links="links" />
+              <XBreadcrumb :links="links" icon />
                 <slot name="left"/>
             </div>
 

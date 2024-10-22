@@ -41,13 +41,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function getWithSearchQueryBuilder(?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
+    public function getWithSearchQueryBuilder(?string $column, ?string $term, ?string $month, ?string $orderBy = 'createdAt', ?string $orderDir = 'DESC'): DoctrineQueryBuilder
     {
         $qb = $this->createQueryBuilder('user')
             ->andWhere('user.isDelete = false');
 
         if ($term) {
-            $qb->andWhere('user.title LIKE :term')
+            $qb->andWhere('user.'.$column.' LIKE :term')
                 ->setParameter('term', '%' . $term . '%');
         }
 

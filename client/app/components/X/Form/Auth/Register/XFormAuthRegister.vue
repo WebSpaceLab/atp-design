@@ -22,7 +22,7 @@
   let canSeeTheConfirmPassword = ref(false)
 
   const isOpenAgreementModel = ref<boolean>(false)
-  const lang = ref('en')
+  const lang = ref(['en'])
 
   const optionsSelected = ref([
     { value: 'en', label: 'English', selected: false },

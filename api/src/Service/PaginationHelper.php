@@ -6,7 +6,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class PaginationHelper
 {
-    public function paginate($query, $pageNumber = 1, $perPage = 10)
+    public function paginate($query, $pageNumber = 1, $perPage = 8)
     {
         $page = $pageNumber < 1 ? 1 : $pageNumber;
 

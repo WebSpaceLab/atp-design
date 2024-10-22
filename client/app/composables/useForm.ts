@@ -53,10 +53,11 @@ export default function useForm(body) {
         onError: async (error: any) => {
           this.hasErrors = true
 
-          if (error?.statusCode !== 422 && error?.statusCode !== 401) flash(error.data.title, 'error')
+          if (error?.statusCode !== 422 || error?.statusCode !== 401) flash(error.data.title, 'error')
           if (error?.statusCode === 401) flash('Unauthorized', 'error')
           if (error?.statusCode === 422) {
             this.clearErrors()
+            console.log('ERROR', error)
             this.setErrors(error.data?.errors)
           }
 

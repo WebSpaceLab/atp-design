@@ -21,12 +21,19 @@ export const useModalHelper = () => {
     isShowRegisterModal.value = false
   }
 
+  const showLoginModal = () => {
+    isShowLoginModal.value = true
+    isShowRegisterModal.value = false
+    isShowForgotPasswordModal.value = false
+  }
+
   return {
     isShowLoginModal,
     isShowRegisterModal,
     isShowForgotPasswordModal,
     toggleLoginModal,
     toggleRegisterModal,
-    toggleForgotPasswordModal
+    toggleForgotPasswordModal,
+    showLoginModal
   }
 }

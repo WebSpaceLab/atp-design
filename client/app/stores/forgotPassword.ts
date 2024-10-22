@@ -1,16 +1,20 @@
-export const useForgotPasswordStore = defineStore('ForgotPassword', () => {
-  const form = reactive({
-    errors: null,
-    processing: false,
-    body: {
-      email: ''
+export const useForgotPasswordStore = defineStore('ForgotPassword', {
+  state: () => {
+    return {
+      body: {
+        email: ''
+      },
+      loading: false
     }
-  }) as any
+  },
 
-  const forgotPassword = async () => {
-  }
-  return {
-    form,
-    forgotPassword
+  actions: {
+    async submit(form: any) {
+      form.submit('/api/forgot-password', 'POST', {
+        success: () => {
+          form.reset()
+        }
+      })
+    }
   }
 })
