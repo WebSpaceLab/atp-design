@@ -1,3 +1,6 @@
+import type { IAuthBody, IAuthResponse, IAuthSession } from '~~/types/auth'
+import type { IForm, IFormResponse } from '~~/types/form'
+
 export const useAuthStore = defineStore('Auth', {
   state: () => ({
     session: {
@@ -6,33 +9,29 @@ export const useAuthStore = defineStore('Auth', {
       token: '',
       tokenExpiresAt: '',
       roles: [],
-      user: {}
-    },
-
-    form: {
-      loading: false,
-      errors: [],
-      body: {
-        email: '',
-        password: '',
-      }
-    }
+      user: {},
+    } as IAuthSession,
   }),
 
   actions: {
-    async login(body: any) {
+    async login(form: IForm<IAuthBody>) {
       this.clearSession()
 
-      await useApi().post('/api/auth/login', body).then((res: any) => {
-        this.session.loggedIn = true
-        this.session.token = res.apiToken
-        this.session.iri = res.Location
-        this.session.tokenExpiresAt = res.apiTokenExpiresAt
-      }).finally(async () => {
+      form.submit('/api/auth/login', 'POST', {
+        success: (res: IFormResponse) => {
+          this.session.loggedIn = true
 
-        this.form.loading = false
-        navigateTo('/dashboard')
-      })
+          if (res.data as IAuthResponse) {
+            this.session.token = res.data.apiToken
+            this.session.iri = res.data.Location
+            this.session.tokenExpiresAt = res.data.apiTokenExpiresAt
+          }
+
+          useModalHelper().toggleLoginModal()
+          form.reset()
+          navigateTo('/dashboard')
+        },
+      }, {})
     },
 
     async init() {
@@ -40,9 +39,9 @@ export const useAuthStore = defineStore('Auth', {
 
       await useApi().get(this.session.iri, {
         Headers: {
-          Authorization: `Bearer ${this.session.token}`
-        }
-      }).then((res: any) => {
+          Authorization: `Bearer ${this.session.token}`,
+        },
+      }).then((res) => {
         this.session.user = Object.fromEntries(Object.entries(res.user).filter(([key]) => key !== 'roles'))
         this.session.roles = res.user.roles
       }).catch(() => {
@@ -65,7 +64,7 @@ export const useAuthStore = defineStore('Auth', {
         this.logout('You are not authorized to access this page.')
 
         return navigateTo('/', {
-          replace: true, redirectCode: 401
+          replace: true, redirectCode: 401,
         })
       }
     },
@@ -77,8 +76,7 @@ export const useAuthStore = defineStore('Auth', {
       this.session.tokenExpiresAt = ''
       this.session.roles = []
       this.session.user = {}
-    }
+    },
   },
-  persist: true
+  persist: true,
 })
-

@@ -1,16 +1,17 @@
 // @ts-nocheck
-
 import cloneDeep from 'lodash.clonedeep'
 import isEqual from 'lodash.isequal'
+import type { IForm, IFormResponse } from '~~/types/form'
 
 export default function useForm(body) {
   let defaults = body
-  let recentlySuccessfulTimeoutId;
-  let { flash } = useToast()
+  let recentlySuccessfulTimeoutId
+  const { flash } = useToast()
 
-  const form = reactive({
+  const form: IForm = reactive({
     body: cloneDeep(body),
-    errors: {} as any,
+    errors: {},
+    error: null as string | null,
     dirty: false as boolean,
     hasErrors: false as boolean,
     loading: false as boolean,
@@ -31,7 +32,7 @@ export default function useForm(body) {
           if (hooks.start) await hooks.start()
         },
 
-        onSuccess: async (res: any) => {
+        onSuccess: async (res) => {
           this.clearErrors()
           this.wasSuccessful = true
           this.recentlySuccessful = true
@@ -50,11 +51,15 @@ export default function useForm(body) {
           return res.data
         },
 
-        onError: async (error: any) => {
+        onError: async (error) => {
           this.hasErrors = true
 
-          if (error?.statusCode !== 422 || error?.statusCode !== 401) flash(error.data.title, 'error')
-          if (error?.statusCode === 401) flash('Unauthorized', 'error')
+          // if (error?.statusCode !== 422 || error?.statusCode !== 401) flash(error.data.title, 'error')
+          if (error?.statusCode === 401) {
+            this.clearError()
+            flash('Unauthorized', 'error')
+            this.setError(error.data?.error)
+          }
           if (error?.statusCode === 422) {
             this.clearErrors()
             console.log('ERROR', error)
@@ -76,11 +81,12 @@ export default function useForm(body) {
 
       return await useFetchApi(path, {
         method,
-        body: this.body
-      }).then(async (res: any) => {
+        body: this.body,
+        ...hooks.options,
+      }).then(async (res: IFormResponse) => {
         if (res.status.value === 'success') return await _hooks.onSuccess(res.data.value)
         if (res.status.value === 'error') return await _hooks.onError(res.error.value)
-      }).catch(async (error: any) => {
+      }).catch(async (error) => {
         return await _hooks.onError(error.value)
       }).finally(async () => {
         await _hooks.onFinish()
@@ -92,7 +98,8 @@ export default function useForm(body) {
 
       if (body.length === 0) {
         this.body = clonedDefaults
-      } else {
+      }
+      else {
         body.forEach((key) => {
           if (clonedDefaults[key] !== undefined) this.body[key] = clonedDefaults[key]
         })
@@ -103,8 +110,8 @@ export default function useForm(body) {
       if (body.length === 0) {
         this.errors = {}
         this.hasErrors = false
-
-      } else {
+      }
+      else {
         body.forEach((key: number) => delete this.errors[key])
       }
 
@@ -114,17 +121,25 @@ export default function useForm(body) {
     setErrors(errors) {
       this.errors = {
         ...this.errors,
-        ...errors
+        ...errors,
       }
 
       this.hasErrors = Object.keys(this.errors).length > 0
     },
-  });
+
+    clearError() {
+      this.error = null
+    },
+
+    setError(error) {
+      this.error = error
+    },
+  })
 
   watch(() => form.body, () => {
     form.dirty = !isEqual(form.body, defaults)
   }, {
-    immediate: true, deep: true
+    immediate: true, deep: true,
   })
 
   return form

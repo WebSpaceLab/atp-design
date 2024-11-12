@@ -29,7 +29,49 @@ export const useSidebar = () => {
             icon: 'i-heroicons-presentation-chart-line-20-solid',
             to: '/dashboard',
           },
-        ]
+        ],
+      },
+
+      {
+        label: 'Workouts',
+        icon: 'i-heroicons-presentation-chart-line-20-solid',
+        to: '/dashboard/workouts',
+        type: 'basic',
+        access: ['admin', 'user', 'coach', 'editor'],
+        name: 'dashboard',
+        tree: [
+          {
+            label: 'Dashboard',
+            icon: 'i-heroicons-presentation-chart-line-20-solid',
+            to: '/dashboard',
+          },
+          {
+            label: 'Workouts',
+            icon: 'i-heroicons-presentation-chart-line-20-solid',
+            to: '/dashboard/workouts',
+          },
+        ],
+      },
+
+      {
+        label: 'Media',
+        icon: 'i-material-symbols-media-link',
+        to: '/dashboard/media',
+        type: 'basic',
+        access: ['admin', 'user', 'coach', 'editor'],
+        name: 'dashboard-media',
+        tree: [
+          {
+            label: 'Dashboard',
+            icon: 'i-heroicons-presentation-chart-line-20-solid',
+            to: '/dashboard',
+          },
+          {
+            label: 'Media',
+            icon: 'i-heroicons-user-plus-solid',
+            to: '/dashboard/media',
+          },
+        ],
       },
 
       {
@@ -50,7 +92,7 @@ export const useSidebar = () => {
             icon: 'i-heroicons-user-plus-solid',
             to: '/dashboard/profile',
           },
-        ]
+        ],
       },
 
       {
@@ -71,9 +113,9 @@ export const useSidebar = () => {
             icon: 'i-heroicons-user-group-solid',
             to: '/dashboard/users',
           },
-        ]
+        ],
       },
-    ]
+    ],
   }))
 
   const rightSide = () => {
@@ -112,6 +154,6 @@ export const useSidebar = () => {
     reduceWidth,
     enlargeWidth,
     toggleWidth,
-    toggleShowMenuBar
+    toggleShowMenuBar,
   }
 }

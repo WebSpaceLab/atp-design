@@ -1,58 +1,74 @@
 <script lang="ts" setup>
+  import type { PropType } from 'vue';
+
   defineProps({
     color: {
-      type: String,
+      type: String as PropType<'default' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'red' | 'blue' | 'yellow' | 'indigo' | 'purple' | 'pink' | 'orange' | 'green' | 'teal' | 'cyan' | 'black' | 'gray' | 'dark'>,
       default: 'default',
+      validator: function(value: string) {
+        return ['default', 'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'red' , 'blue', 'yellow', 'indigo', 'purple', 'pink', 'orange', 'green', 'teal', 'cyan', 'black', 'gray', 'dark'].indexOf(value) !== -1;
+      }
     },
     size: {
-      type: String,
+      type: String as PropType<'default' | 'sm' | 'md' | 'lg'>,
       default: 'default',
+      validator: function(value: string) {
+        return ['default', 'sm', 'md', 'lg'].indexOf(value) !== -1;
+      }
     },
     variant: {
-      type: String,
+      type: String as PropType<'default' | 'solid' | 'outline' | 'ghost' | 'link'>,
       default: 'default',
+      validator: function(value: string) {
+        return ['default', 'solid', 'outline', 'ghost', 'link'].indexOf(value) !== -1;
+      }
     },
     rounded: {
-      type: String,
+      type: String as PropType<'default' | 'none' | 'sm' | 'md' | 'lg' | 'full'>,
       default: 'default',
+      validator: function(value: string) {
+        return ['default', 'none', 'sm', 'md', 'lg', 'full'].indexOf(value) !== -1;
+      }
     },
     label: {
-      type: String,
+      type: String as PropType<string>,
       default: 'Button',
     },
     icon: {
-      type: String,
+      type: String as PropType<string>,
       default: '',
     },
     iconPosition: {
-      type: String,
+      type: String as PropType<'left' | 'right'>,
       default: 'left',
+      validator: function(value: string) {
+        return ['left', 'right'].indexOf(value) !== -1;
+      },
     },
     loading: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
     square: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
     disabled: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
     shadow: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
     block: {
-      type: Boolean,
+      type: Boolean as PropType<boolean>,
       default: false,
     },
     type: {
-      type: String,
+      type: String as PropType<'button' | 'submit' | 'reset'>,
       default: 'button',
       validator: function(value: string) {
-        // The value must match one of these strings
         return ['button', 'submit', 'reset'].indexOf(value) !== -1;
       },
     },
@@ -71,7 +87,7 @@
       setRounded(rounded),
       setIconPosition(iconPosition),
     ]" 
-    :type="type as 'button' | 'submit' | 'reset'"
+    :type="type"
     :disabled="disabled"
     @click="rippleClick"
   >

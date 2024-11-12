@@ -14,25 +14,6 @@
       icon: 'i-heroicons-book-open',
       to: '/about'
     },
-    // {
-    //   label: 'Dashboard',
-    //   name: 'dashboard',
-    //   icon: 'i-heroicons-square-3-stack-3d',
-    //   to: '/dashboard',
-    //   children: [{
-    //     label: 'Profile',
-    //     name: 'dashboard-profile',
-    //     to: '/dashboard/profile',
-    //     icon: 'i-heroicons-ticket',
-    //     description: 'User profile'
-    //   }, {
-    //     label: 'Users',
-    //     name: 'dashboard-users',
-    //     to: '/dashboard/users',
-    //     icon: 'i-heroicons-ticket',
-    //     description: 'Users list'
-    //   }]
-    // }, 
     {
       label: 'Contact',
       name: 'contact',
@@ -59,10 +40,6 @@
           <div v-else class="h-full flex items-center justify-center" >
             <x-dropdown-manage-account v-if="session.user" :user="session.user" />
           </div>
-
-          <!-- Auth buttons 
-            <XDropdownManageAccount v-else />
-          -->
         </template>
       </XNavbar>
     </template>

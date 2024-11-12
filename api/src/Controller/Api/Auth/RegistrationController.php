@@ -119,7 +119,7 @@ class RegistrationController extends AbstractAPIController
     {
         $url = $this->generateUrl('verify.email', ['token' => $verificationToken], UrlGeneratorInterface::ABSOLUTE_URL);
    
-        $email = (new TemplatedEmail())
+        $templatedEmail = (new TemplatedEmail())
             ->from(new Address('noreply@example.com', 'Atp'))
             ->to(new Address($email, $user->getUsername()))
             ->subject('Potwierdzenie adresu email')
@@ -129,7 +129,7 @@ class RegistrationController extends AbstractAPIController
                 'url' => $url
             ]);
 
-        $this->mailer->send($email);
+        $this->mailer->send($templatedEmail);
     }
 
     #[Route('/api/verify/email', name: 'verify.email')]

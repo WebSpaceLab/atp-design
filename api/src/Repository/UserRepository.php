@@ -93,6 +93,60 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
+    public function findNewSignUps()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u')
+            ->where('u.createdAt >= :date')
+            ->setParameter('date', Carbon::now()->subDays(7))
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUserGrowth()
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT COUNT(id) as total, 
+                   EXTRACT(YEAR FROM created_at) as year, 
+                   EXTRACT(MONTH FROM created_at) as month
+            FROM user
+            WHERE created_at >= :date
+            AND is_delete = false
+            GROUP BY year, month
+            ORDER BY year ASC, month ASC
+        ';
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue('date', Carbon::now()->subMonths(6)->startOfMonth()->format('Y-m-d'));
+        $result = $stmt->executeQuery();
+        
+        return $result->fetchAllAssociative();
+    }
+
+    public function getUserGrowthChartData()
+    {
+        $growthData = $this->findUserGrowth();
+        
+        $labels = [];
+        $data = [];
+        
+        foreach ($growthData as $row) {
+            $date = Carbon::createFromDate($row['year'], $row['month'], 1);
+            $labels[] = $date->format('F Y'); // Nazwa miesiąca i rok
+            $data[] = (int)$row['total'];
+        }
+        
+        return [
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'Nowi użytkownicy',
+                    'backgroundColor' => '#1e40af',
+                    'data' => $data,
+                ],
+            ],
+        ];
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

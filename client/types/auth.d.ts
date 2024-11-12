@@ -1,17 +1,21 @@
-declare module '#auth-utils' {
-  interface User {
-    // Add your own fields
-    // username: string
-    // avatarUrl: string
-    // email: string
-    // iri: string
-  }
-
-  interface UserSession {
-    // Add your own fields
-    iri: string
-    loggedInAt: Date
-  }
+interface IAuthBody {
+  email: string
+  password: string
 }
 
-export { }
+interface IAuthSession {
+  iri: string
+  loggedIn: boolean
+  token: string
+  tokenExpiresAt: string
+  roles: string[]
+  user: Record<string, any>
+}
+
+interface IAuthResponse {
+  apiToken: string
+  apiTokenExpiresAt: string
+  Location: string
+}
+
+export type { IAuthBody, IAuthSession, IAuthResponse }

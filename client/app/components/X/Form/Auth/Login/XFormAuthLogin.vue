@@ -1,54 +1,62 @@
 <script setup lang="ts">
-const { form, login } = useAuthStore() as any
-  // const form = useForm({
-  //   email: '',
-  //   password: ''
-  // }) as any  
+const { login } = useAuthStore()
+const form = useForm({
+  email: '',
+  password: '',
+})
 
-  // const login = async () => {
-  //   form.submit('/api/auth/login','POST', {
-  //     success: () => {
-  //       useModalHelper().toggleLoginModal()
-  //       form.reset()
-  //     },
-  //   })
-  // }
-  const canSeeThePassword = ref(false)
+const canSeeThePassword = ref(true)
 </script>
 
 <template>
-  <form class="relative w-full h-full flex flex-col" @submit.prevent="login(form.body)" >    
+  <form
+    class="relative w-full h-full flex flex-col"
+    @submit.prevent="login(form)"
+  >
+    <span
+      v-if="form.error"
+      class="bg-error-200 text-error-600 flex justify-center items-center w-full h-10 rounded-lg"
+    >
+      {{ form.error }}
+    </span>
+
     <div class="pt-5 space-y-8">
       <x-input
         v-model="form.body.email"
         label="Email"
         type="email"
-        :color="form.errors && form.errors?.email ? 'error' : 'default'"
         icon="material-symbols:mark-email-unread-sharp"
         name="email_login"
-        :error="form.errors && form.errors?.email ? form.errors.email : ''"
         autofocus
       />
-
 
       <div>
         <x-input
           v-model="form.body.password"
           :type="canSeeThePassword ? 'text' : 'password'"
           label="Hasło"
-          :color="form.errors && form.errors?.password ? 'error' : 'default'"
           icon="teenyicons:password-solid"
           right-icon
           name="password_login"
-          :error="form.errors && form.errors?.password ? form.errors?.password : ''"
         >
           <template #right-icon>
-            <Icon v-if="canSeeThePassword" @click="canSeeThePassword = false" name="mdi:eye-off-outline" class="text-xl text-blue-600 hover:text-green-600 cursor-pointer" />
-            <Icon v-else @click="canSeeThePassword = true" name="mdi:eye-outline" class="text-xl hover:text-red-600 cursor-pointer" />
+            <Icon
+              v-if="canSeeThePassword"
+              name="mdi:eye-off-outline"
+              class="text-xl text-blue-600 hover:text-green-600 cursor-pointer"
+              @click="canSeeThePassword = !canSeeThePassword"
+            />
+
+            <Icon
+              v-if="!canSeeThePassword"
+              name="mdi:eye-outline"
+              class="text-xl hover:text-red-600 cursor-pointer"
+              @click="canSeeThePassword = !canSeeThePassword"
+            />
           </template>
         </x-input>
 
-        <XModalAuthForgotPassword  />
+        <XModalAuthForgotPassword />
       </div>
 
       <div class="w-full space-y-6">
@@ -56,13 +64,13 @@ const { form, login } = useAuthStore() as any
           :disabled="(!form.body.email || !form.body.password)"
           type="submit"
           color="success"
-          :loading="form.processing"
+          :loading="form.loading"
           shadow
           block
         >
-          Sige in
+          Sign in
         </x-btn>
       </div>
-    </div>        
+    </div>
   </form>
 </template>

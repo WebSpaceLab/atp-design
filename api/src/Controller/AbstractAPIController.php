@@ -100,9 +100,11 @@ abstract class AbstractAPIController extends AbstractController
         return null;
     }
 
-    public function validated(mixed $value = null, mixed $data = null)
+    public function validated(Assert\Composite|array|null $constraints = null, mixed $data = null)
     {
-        $constraints = new Assert\Collection($value);
+        if (!$constraints || !$data) {
+            return null;
+        }
 
         $violations = $this->validator->validate($data, $constraints);
 

@@ -1,75 +1,15 @@
-# Nuxt 3 Minimal Starter
+# ATP - Advanced Training Platform
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Project Description
 
-## Setup
+ATP (Advanced Training Platform) is a comprehensive and modern fitness platform designed to help users create personalized training plans, analyze their progress, and maintain a workout journal. Our mission is to support users in achieving their fitness goals by providing precise and effective tools.
 
-Make sure to install the dependencies:
+## Features
 
-```bash
-# npm
-npm install
+- **Personalized Training Plans:** Create plans tailored to your needs and goals.
+- **Workout Data Analysis:** Use advanced tools to monitor your progress and adjust your plans.
+- **Workout Journal:** Keep a detailed log of your workouts to track progress and stay motivated.
+- **Community Support:** Join a community of like-minded individuals for support and motivation.
+- **Progress Tracking:** Utilize tools to monitor your progress and generate reports to see your achievements.
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Technologies

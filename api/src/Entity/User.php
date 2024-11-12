@@ -67,11 +67,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'media:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read','profile:read', 'user:auth'])]
+    #[Groups(['user:read','profile:read', 'user:auth','media:read'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -96,17 +96,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(groups: ['register', 'profile:write'])]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['user:read','profile:read', 'user:auth'])]
+    #[Groups(['user:read','profile:read', 'user:auth', 'media:read'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['user:read','profile:read', 'profile:write'])]
+    #[Groups(['user:read','profile:read', 'profile:write', 'media:read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, groups: ['register', 'profile:write'])]
-    #[Groups(['user:read','profile:read', 'profile:write'])]
+    #[Groups(['user:read','profile:read', 'profile:write', 'media:read'])]
     private ?string $lastName = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

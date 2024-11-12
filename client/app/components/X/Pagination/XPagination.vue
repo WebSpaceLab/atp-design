@@ -66,8 +66,6 @@ function updatePreviewPages() {
   const total: number = typeof totalPages.value === 'number' ? totalPages.value : parseInt(totalPages.value)
   const current: number = typeof props.pagination.current_page === 'number' ? props.pagination.current_page : parseInt(props.pagination.current_page)
 
-  emits('per_page', props.pagination.per_page)
-
   if (total <= 5) {
     // Display all pages if total pages are <= 5
     if(props.pagination.first_page) {
@@ -108,7 +106,10 @@ function updatePreviewPages() {
 }
 
 // Watchers for updating the preview pages based on changes
-watch(() => props.pagination.per_page, updatePreviewPages)
+watch(() => props.pagination.per_page,() => {
+  updatePreviewPages()
+  emits('per_page', props.pagination.per_page)
+})
 watch(() => props.pagination.total, updatePreviewPages)
 
 // Initialize preview pages when component is mounted
@@ -147,7 +148,7 @@ onMounted(updatePreviewPages)
         @click="getPage(prevPage)" 
       />
 
-      <template v-for="(page, index) in previewPages" :key="index">
+      <div v-for="(page, index) in previewPages" :key="index">
         <div
           class="py-1 px-3 mx-1 rounded cursor-pointer shadow-black shadow-xl hover:bg-primary hover:text-white dark:hover:bg-primary-dark dark:hover:text-white"
           :class="{
@@ -158,12 +159,10 @@ onMounted(updatePreviewPages)
           @click="typeof page === 'number' ? getPage(page) : null"
           v-html="page"
         />
-      </template>
+      </div>
 
-      <!-- Input for direct page selection 
-        
-        <input v-if=" totalPages > 5" v-model="inputPage" type="text" class="w-10 text-black border-gray rounded shadow-black shadow-xl" @keydown.enter="getPage(inputPage !== null ? inputPage : 0)" />
-      -->
+      <!-- Input for direct page selection -->
+      <input v-if=" totalPages > 5" v-model="inputPage" type="text" class="w-10 text-black border-gray rounded shadow-black shadow-xl" @keydown.enter="getPage(inputPage !== null ? inputPage : 0)" />
 
       <x-btn 
         v-if="nextPage" 

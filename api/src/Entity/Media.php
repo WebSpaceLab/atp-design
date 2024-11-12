@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\MediaRepository;
 use App\Trait\Timestamps;
+use Carbon\Carbon;
 // use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -45,19 +46,17 @@ class Media
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'media')]
-    #[Groups(['admin:media:read'])]
+    #[Groups(['media:read','admin:media:read'])]
     private ?User $author = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['admin:media:read'])]
     private ?bool $isDelete = false;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['admin:media:read'])]
     private ?bool $isUsed = false;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['media:read', 'admin:media:read'])]
+    #[Groups(['media:read'])]
     private ?string $pathUrl = null;
 
     public function __construct()
@@ -155,23 +154,23 @@ class Media
         return $this;
     }
 
-    // #[Groups(['media:read', 'admin:media:read'])]
-    // public function getCreatedAtAgo(): ?string
-    // {
-    //     return  Carbon::instance($this->createdAt)->diffForHumans();
-    // }
+    #[Groups(['media:read', 'admin:media:read'])]
+    public function getCreatedAtAgo(): ?string
+    {
+        return  Carbon::instance($this->createdAt)->diffForHumans();
+    }
 
-    // #[Groups(['media:read', 'admin:media:read'])]
-    // public function getUpdatedAtAgo(): ?string
-    // {
-    //     $updatedAtAgo = $this->updatedAt;
+    #[Groups(['media:read', 'admin:media:read'])]
+    public function getUpdatedAtAgo(): ?string
+    {
+        $updatedAtAgo = $this->updatedAt;
 
-    //     if ($updatedAtAgo) {
-    //         $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
-    //     }
+        if ($updatedAtAgo) {
+            $updatedAtAgo = Carbon::instance($updatedAtAgo)->diffForHumans();
+        }
 
-    //     return  $updatedAtAgo;
-    // }
+        return  $updatedAtAgo;
+    }
 
     #[Groups(['homepage:read', 'article:show', 'media:read', 'admin:media:read', 'admin:article:read', 'admin:about:read', 'admin:feature:read', 'feature:read', 'admin:hero:read','admin:team:read', "gallery:read", "gallery:write", 'gallery:show'])]
     public function getPreviewUrl(): ?string

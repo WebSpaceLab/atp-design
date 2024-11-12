@@ -30,6 +30,7 @@ export default {
           dark: '#4c1d95',
           DEFAULT: '#1e1b4b',
           light: '#1e1b4b',
+          50: '#f5f3ff',
           100: '#e0e7ff',
           200: '#c7d2fe',
           300: '#a5b4fc',
@@ -39,6 +40,7 @@ export default {
           700: '#4338ca',
           800: '#3730a3',
           900: '#312e81',
+          950: '#1e1b4b',
         },
 
         secondary: {

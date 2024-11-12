@@ -1,11 +1,11 @@
 export function useFetchApi(path: string, options: any = { headers: {} }) {
   const config = useRuntimeConfig()
-  const token: string | any = useAuthStore().session.token
+  const token: string | string | null = useAuthStore().session.token
 
-  let headers: any = {
+  const headers: Record<string, string> = {
     // accept: "application/ld+json",
-    "Content-Type": "application/merge-patch+json",
-    referer: config.public.appUrl,
+    'Content-Type': 'application/json',
+    'referer': config.public.appUrl,
   }
 
   if (token) {
@@ -26,7 +26,7 @@ export function useFetchApi(path: string, options: any = { headers: {} }) {
     watch: false,
     headers: {
       ...headers,
-      ...options?.headers
-    }
+      ...options?.headers,
+    },
   })
 }

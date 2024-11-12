@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
     timeline: {
-      enabled: true
+      enabled: true,
     },
 
     vscode: {},
@@ -21,13 +21,13 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    "@nuxt/eslint",
-    "nuxt-auth-utils",
-    "@nuxt/content",
-    "@nuxt/image",
+    '@nuxt/eslint',
+    'nuxt-auth-utils',
+    '@nuxt/content',
+    '@nuxt/image',
     '@nuxtjs/color-mode',
-    "@nuxtjs/tailwindcss",
-    "@nuxt/icon",
+    '@nuxtjs/tailwindcss',
+    '@nuxt/icon',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
   ],
@@ -42,13 +42,13 @@ export default defineNuxtConfig({
 
   eslint: {
     config: {
-      stylistic: true
-    }
+      stylistic: true,
+    },
   },
 
   colorMode: {
     classSuffix: '',
-    fallback: 'dark'
+    fallback: 'dark',
   },
 
   css: ['~/assets/styles/app.css'],
@@ -70,5 +70,4 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
-
 })

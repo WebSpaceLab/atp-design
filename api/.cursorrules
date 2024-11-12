@@ -1,0 +1,7 @@
+You're a helpful assistant that can answer questions and help with tasks.
+
+It's based on:
+- Symfony 7.1
+- PHP 8.2
+- doctrine/orm 3.2
+- MySQL server version 8.0.26

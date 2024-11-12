@@ -34,6 +34,6 @@ export const useModalHelper = () => {
     toggleLoginModal,
     toggleRegisterModal,
     toggleForgotPasswordModal,
-    showLoginModal
+    showLoginModal,
   }
 }
