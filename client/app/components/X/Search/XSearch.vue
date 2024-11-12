@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     color: {
         type: String,
@@ -10,7 +10,7 @@ const props = defineProps({
     },
     icon: {
         type: Boolean,
-        default: true
+        default: false
     },
     rightIcon: {
         type: Boolean,
@@ -40,127 +40,152 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
-    topics: {
-        type: Array,
-        default: () => [] // Tematyki np. ['Technology', 'Science', 'Business']
-    },
-    selectedFilters: {
-        type: Object,
-        default: () => ({}) 
-    },
 });
-
+const isShowFilters = ref(true)
 const emits = defineEmits([
     'update:modelValue',
-    'apply-filters',
-    'apply-topics'
 ]);
 
-const isShowFieldAction = ref(false);
-const selectedTopics = ref([]);
-const selectedFilter = ref('All');
+const isShowFieldAction = ref(false)
 
 const inputColor = computed(() => {
     return {
-        'blue': 'text-blue-500 focus:text-blue-600 border-blue-500 focus:border-blue-600 placeholder-blue-600 bg-transparent',
-        'red': 'text-red-500 focus:text-red-600 border-red-500 focus:border-red-600 placeholder-red-600 bg-transparent',
-        'green': 'text-green-500 focus:text-green-600 border-green-500 focus:border-green-600 placeholder-green-600 bg-transparent',
-        'gray': 'text-gray-500 focus:text-gray-600 border-gray-500 focus:border-gray-600 placeholder-gray-600 bg-transparent',
-    }[props.color];
+        'blue' : 'text-blue-500 focus:text-blue-600 border-blue-500 focus:border-blue-600 placeholder-blue-600 bg-transparent',
+        'red' : 'text-red-500 focus:text-red-600 border-red-500 focus:border-red-600 placeholder-red-600 bg-transparent',
+        'green' : 'text-green-500 focus:text-green-600 border-green-500 focus:border-green-600 placeholder-green-600 bg-transparent',
+        'gray' : 'text-gray-500 focus:text-gray-600 border-gray-500 focus:border-gray-600 placeholder-gray-600 bg-transparent',
+        'info' : 'text-info focus:text-info border-info focus:border-info placeholder-info bg-transparent',
+        'error' : 'text-error focus:text-error border-error focus:border-error placeholder-error bg-transparent',
+        'success' : 'text-success focus:text-success border-success focus:border-success placeholder-success bg-transparent',
+    } [ props.color]
 });
 
 const iconColor = computed(() => {
     return {
-        'blue': 'text-blue-600',
-        'red': 'text-red-600',
-        'green': 'text-green-600',
-        'gray': 'text-gray-600',
-    }[props.iconColor || props.color];
+        'blue' : 'text-blue-600',
+        'red' : 'text-red-600',
+        'green' : 'text-green-600',
+        'gray' : 'text-gray-600',
+        'info' : 'text-info ',
+        'error' : 'text-error',
+        'success' : 'text-success',
+    } [props.iconColor ? props.iconColor : props.color]
 });
-
-// Aplikowanie wybranych filtrów
-function applyFilters() {
-    emits('apply-filters', selectedFilter.value);
-    isShowFieldAction.value = false;
-}
-
-// Aplikowanie wybranych tematyk
-function applyTopics() {
-    emits('apply-topics', selectedTopics.value);
-    isShowFieldAction.value = false;
-}
 </script>
 
 <template>
     <div class="relative w-full">
-        <div class="flex space-x-3">
-            <XTooltip text="Search" position="bottom">
-                <XBtn @click="isShowFieldAction = true" color="primary" variant="ghost" square icon="i-line-md-search" />
-            </XTooltip>
+        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 justify-center items-center">
+            <div v-if="!filter && isShowFilters" class="w-full h-auto py-4 md:py-0 z-10 flex flex-col space-y-3 md:space-y-0 box-border">
+                <div  class="absolute block md:hidden right-0 top-0">
+                    <x-btn-close-to-open :switcher="isShowFilters" @click="isShowFilters = false"/>
+                </div>
+
+                <div class="w-full h-auto flex justify-center items-center box-border transition-all duration-300">
+                    <slot  name="selectedAction"/>
+                </div>
+            </div>
+
+            <div class="relative w-full md:w-80 flex">
+                <div
+                    v-if="icon"
+                    :class="[iconColor, iconPosition === 'left' ? 'left-0' : 'right-0']"
+                    class="absolute inset-y-0 flex items-center p-3"
+                >
+                    <Icon name="bi:search" class="text-xl"/>
+                </div>
+        
+                <div
+                    v-if="rightIcon"
+                    :class="[iconColor]"
+                    class="absolute inset-y-0 right-0 flex items-center p-3"
+                >
+                    <Icon name="bi:search" class="text-xl"/>
+                </div>
+        
+                <input
+                    :value="modelValue"
+                    :class="[inputColor, icon && iconPosition === 'left' ? 'pl-10' : 'pl-3']"
+                    :placeholder="placeholder" 
+                    class="block  h-9  w-full text-sm rounded-2xl border-1 bg-background dark:bg-background-dark appearance-none focus:right-1 focus:outline-none focus:ring-1 left-3"
+                    type="search"
+                    autofocus
+                    @input="(e) => emits('update:modelValue', (e.target as HTMLInputElement).value)"
+                />
+
+                <div
+                    v-if="!isShowFilters"
+                    class="flex md:hidden items-center z-10"
+                >
+                    <x-btn-close-to-open :switcher="isShowFilters" @click="isShowFilters = true"/>
+                </div>
+            </div>
+
+            <x-tooltip v-if="filter" text="Filters" position="bottom">
+                <x-btn
+                    class="h-9 w-9"
+                    color="primary"
+                    icon="ic:sharp-manage-search"
+                    variant="ghost"
+                    square
+                    @click="isShowFieldAction = true"
+                />
+            </x-tooltip> 
         </div>
 
-        <!-- Modal z filtrami i tematyką -->
         <x-modal
             :show="isShowFieldAction"
-            max-width="3xl"
+            max-width="max"
             :closeable="closeable"
-            @close="event => isShowFieldAction = event"
-        >
-            <div class="w-full bg-prime-light dark:bg-prime-dark max-h-[calc(100vh-40px)] flex flex-col">
-                <!-- Sekcja wyszukiwania -->
-                <div class="relative w-full h-15 rounded-t-md">
-                    <div
-                        v-if="icon"
-                        :class="[inputColor, iconPosition === 'left' ? 'left-0' : 'right-0']"
-                        class="absolute inset-y-0 flex items-center p-3 rounded-l-lg"
-                    >
-                        <Icon name="i-material-symbols:search-rounded" class="text-xl"/>
+            @close="isShowFieldAction = $event"
+        >   
+            <div 
+                class="w-full  bg-prime-light dark:bg-prime-dark max-h-[calc(100vh-40px)] flex flex-col"
+                :class="[
+                    answer ? 'h-screen lg:h-150' : 'h-full',
+                ]"
+            >
+                <div class="w-full h-full flex flex-col items-center">
+                    <div class="relative w-full flex h-15 rounded-t-lg">
+                        <div
+                            v-if="icon"
+                            :class="[iconColor, iconPosition === 'left' ? 'left-0' : 'right-0']"
+                            class="absolute inset-y-0 flex items-center p-3"
+                        >
+                            <Icon name="bi:search" class="text-xl"/>
+                        </div>
+                        
+                        <div class="absolute top-1 right-1">
+                            <x-btn
+                                color="gray"
+                                icon="mdi:keyboard-esc"
+                                square
+                                @click="isShowFieldAction = false"
+                            />
+                        </div>
+                
+                        <input
+                            :value="modelValue"
+                            :class="[inputColor, icon && iconPosition === 'left' ? 'pl-10' : 'pl-3']"
+                            :placeholder="placeholder"
+                            class="block px-3 h-15 w-full text-xl border-1 rounded-t-lg bg-background dark:bg-background-dark appearance-none focus:right-1 focus:outline-none focus:ring-1 left-3"
+                            type="search"
+                            autofocus
+                            @input="event => emits('update:modelValue', event.target.value)"
+                        >
                     </div>
 
-                    <input
-                        :value="modelValue"
-                        :class="[inputColor, icon && iconPosition === 'left' ? 'pl-10' : 'pl-3']"
-                        :placeholder="placeholder"
-                        class="block w-full px-3 h-15 text-xl border-1 rounded-t-md bg-background dark:bg-background-dark focus:right-1 focus:outline-none focus:ring-1"
-                        type="search"
-                        autofocus
-                        @input="event => emits('update:modelValue', event.target.value)"
-                    >
-
-                    <div
-                        :class="[iconColor]"
-                        class="absolute top-2.5 right-3 h-7 box-border bg-gray-600 inset-y-0 flex items-center p-3 cursor-pointer"
-                        rounded
-                        @click="isShowFieldAction = false"
-                    >
-                        <Icon name="mdi:keyboard-esc" class="text-xl text-gray-400"/>
-                    </div>
-                </div>
-
-                <div v-if="false">
-                    <!-- Sekcja filtrów -->
-                    <div class="p-3 flex flex-wrap gap-2">
-                        <span v-for="filter in selectedFilters" :key="filter" class="cursor-pointer px-3 py-1 bg-gray-200 hover:bg-gray-300" @click="selectedFilter = filter">
-                            {{ filter }}
-                        </span>
-                    </div>
-
-                    <!-- Sekcja tematyk -->
-                    <div class="p-3">
-                        <div class="flex flex-wrap gap-2">
-                            <label v-for="topic in topics" :key="topic" class="cursor-pointer">
-                                {{ topic }}
-                            </label>
+                    <div v-if="filter" class="w-full h-auto md:px-3 py-2 z-10 flex flex-col space-y-3 box-border">
+                        <div class="w-full h-auto pb-3 flex justify-center items-center box-border transition-all duration-300">
+                            <slot  name="selectedAction"/>
                         </div>
                     </div>
-                </div>
 
-                <div v-if="query">
-                    
-                </div>
-
-                <div v-else class="w-full flex justify-center items-center p-2">
-                    <p>Nothing found</p>
+                    <div v-if="answer" class="w-full h-full flex flex-col space-y-3 box-border">
+                        <div class="w-full h-full py-3 md:px-3 overflow-y-scroll box-border mb-36">
+                            <slot name="answer"/>
+                        </div>
+                    </div>
                 </div>
             </div>
         </x-modal>

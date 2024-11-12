@@ -22,8 +22,8 @@ const chartOptions = computed(() => {
 
   return {
     responsive: true,
-    maintainAspectRatio: false, // To pozwoli wykresowi dostosować się do kontenera
-    aspectRatio: 2, // Możesz dostosować tę wartość
+    maintainAspectRatio: false,
+    aspectRatio: 2,
     scales: {
       x: {
         grid: { color: gridColor },
@@ -32,16 +32,6 @@ const chartOptions = computed(() => {
       y: {
         grid: { color: gridColor },
         ticks: { color: textColor },
-      },
-      r: {
-        angleLines: { color: gridColor },
-        grid: { color: gridColor },
-        pointLabels: { color: textColor },
-        ticks: {
-          color: textColor,
-          backdropColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
-          callback: (value: number) => value.toString(),
-        },
       },
     },
     plugins: {
@@ -80,6 +70,18 @@ const contentTypeData = computed(() => ({
     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
   }]
 }))
+const userGrowthData = computed(() => {
+  const userGrowth = info.value?.users?.userGrowth as { labels: string[], data: number[] } | null
+
+  return {
+    labels: userGrowth?.labels ?? [],
+    datasets: [{
+      data: userGrowth?.data ?? [],
+      backgroundColor: '#36A2EB',
+      label: 'Wzrost użytkowników'
+    }]
+  }
+})
 </script>
 
 <template>
@@ -129,7 +131,7 @@ const contentTypeData = computed(() => ({
             <h3 class="text-lg font-semibold mb-4">Wzrost liczby użytkowników</h3>
             <div class="h-64"> <!-- Dodajemy stałą wysokość -->
               <Bar
-                :data="info.users.userGrowth"
+                :data="userGrowthData"
                 :options="chartOptions"
               />
             </div>

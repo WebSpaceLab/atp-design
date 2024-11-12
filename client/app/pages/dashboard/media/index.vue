@@ -15,7 +15,7 @@ let fileEdit = ref<IMedia | undefined>(undefined)
 const preview = ref<IMedia | null>(null)
 
 const { get, deleteMedia } = useMediaStore()
-const { media, pagination, months, queryParams, isLoading } = storeToRefs(useMediaStore())
+const { media, pagination, months, fileTypes,  queryParams, isLoading } = storeToRefs(useMediaStore())
 
 const query = reactive({
   term: queryParams.value.term ? queryParams.value.term : '',
@@ -26,6 +26,36 @@ const query = reactive({
   page: queryParams.value.page ? queryParams.value.page : 1,
   per_page: queryParams.value.per_page ? queryParams.value.per_page : 8,
 }) as IQueryMedia
+
+interface IFileTypeOption {
+  value: string | null;
+  label: string;
+}
+
+interface IMonthsOption {
+  value: string | null;
+  label: string;
+}
+
+const allFileTypes = computed<IFileTypeOption[]>(() => {
+    return [
+        {value: null, label: 'Any type'},
+        ...fileTypes.value.map((type: any) => ({
+            value: type.value,
+            label: type.label
+        }))
+    ];
+})
+
+const allMonths = computed<IMonthsOption[]>(() => {
+    return [
+        {value: null, label: 'Any type'},
+        ...months.value.map((type: any) => ({
+            value: type.value,
+            label: type.label
+        }))
+    ];
+})
 
 async function getMedia() {
   await get(query)
@@ -72,6 +102,12 @@ async function deletedFile(mediaId: number) {
 function addedToLibrary () {
     getMedia()
 }
+
+watch(() => query, async () => {
+  setTimeout(async () => {
+    await getMedia()
+  }, 500)
+}, { deep: true })
 </script>
 
 <template>
@@ -90,6 +126,81 @@ function addedToLibrary () {
 
     <template #main>
       <div class=" h-full p-6 lg:p-10 box-border dark:bg-gray-800/20 transition-all duration-500 rounded-xl">
+        <div class="w-full flex items-end">
+          <x-search class="" v-model="query.term" icon :filter="false" >
+                  <template #selectedAction>
+                      <div class="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 xl:gap-4 xl:px-6">
+                          <select v-model="query.orderBy" name="orderBy" aria-label="orderBy" id="orderBy" class="w-full h-10 bg-background-light dark:bg-background-dark rounded-lg text-basic-light dark:text-basic-dark  dark:border-basic-dark shadow-sm lg:text-sm focus:outline-none focus:ring-focus focus:border-focus">
+                              <option value="createdAt">Uploading</option>
+                              <option value="name">Alphabetically</option>
+                              <option value="updatedAt">Updates</option>
+                          </select>
+      
+                          <select v-model="query.orderDir" name="orderDir" aria-label="orderDir" id="orderDir" class="w-full h-10 bg-background-light dark:bg-background-dark rounded-lg text-basic-light dark:text-basic-dark  dark:border-basic-dark shadow-sm lg:text-sm focus:outline-none focus:ring-focus focus:border-focus">
+                              <option value="desc">Sort by descending</option>
+                              <option value="asc">Sort by ascending</option>
+                          </select>
+                          <select v-model="query.fileType" aria-label="Media type" id="type" class="w-full h-10 bg-background-light dark:bg-background-dark rounded-lg text-basic-light dark:text-basic-dark  dark:border-basic-dark shadow-sm lg:text-sm focus:outline-none focus:ring-focus focus:border-focus">
+                              <option v-for="fileType in allFileTypes" :key="fileType?.value?.toString()" :value="fileType.value">{{ fileType.label }}</option>
+                          </select>
+      
+                          <select v-model="query.month" aria-label="Media date" id="date" class="w-full h-10 bg-background-light dark:bg-background-dark rounded-lg text-basic-light dark:text-basic-dark  dark:border-basic-dark shadow-sm lg:text-sm focus:outline-none focus:ring-focus focus:border-focus">
+                              <option v-for="month in allMonths" :key="month.value?.toString()" :value="month.value">
+                                {{ month.label }}
+                              </option>
+                          </select>
+                      </div>
+                  </template>
+  
+                  <template #answer>
+                      <div v-if="media" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 xl:gap-4 px-6">
+                          <x-card-media
+                              v-for="(file, index) in media"
+                              :key="file.index = index"
+                              :file="file"
+                              @showFieldAction="showFieldAction"
+                              class="h-60 w-full"
+                          >
+                              <template #selected>
+                                  <input v-model="file.selected"  @change="showFieldAction" type="checkbox" class="w-6 h-6 bg-background-light/50 dark:bg-background-dark/50 text-muted-light dark:text-muted-dark rounded border-solid border-muted-light dark:border-muted-dark lg:w-4 lg:h-4 focus:ring-blue-500">
+                              </template>
+  
+                              <template #action>
+                                 <!--
+                                      <x-btn  @click="getPreviewImage(file)" color="secondary" icon  :tooltip="{text: 'Udostępnij'}" rounded>
+                                          <Icon name="mdi:share-variant"  class="text-2xl"/>
+                                      </x-btn>
+                                  -->
+                                  <x-tooltip text="priview">
+                                      <x-btn  @click="getPreviewImage(file)" color="secondary" icon="i-mdi-eye" variant="ghost" square/>
+                                  </x-tooltip>
+  
+                                  <x-tooltip text="Edit">
+                                      <x-btn
+                                          @click="openEditFile(file)"
+                                          color="secondary"
+                                          icon="i-material-symbols-edit"
+                                          variant="ghost"
+                                          square
+                                      />
+                                  </x-tooltip>
+  
+                                  <x-tooltip text="Delete">
+                                      <x-btn
+                                          @click="deletedFile(file.id)"
+                                          color="danger"
+                                          icon="i-material-symbols-restore-from-trash-outline-sharp"
+                                          variant="ghost"
+                                          square
+                                      />
+                                  </x-tooltip>
+                              </template>
+                          </x-card-media>
+                      </div>
+                  </template>
+              </x-search>
+        </div>
+
         <div
           v-if="media"
           class="w-full h-full flex"
