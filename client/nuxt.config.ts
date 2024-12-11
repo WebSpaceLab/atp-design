@@ -47,8 +47,10 @@ export default defineNuxtConfig({
   },
 
   colorMode: {
+    preference: 'system',
+    fallback: 'light',
     classSuffix: '',
-    fallback: 'dark',
+    dataValue: 'theme',
   },
 
   css: ['~/assets/styles/app.css'],
@@ -70,4 +72,10 @@ export default defineNuxtConfig({
   //     }
   //   }
   // },
+
+  icon: {
+    serverBundle: {
+      collections: ['eos-icons', 'heroicons', 'heroicons-solid', 'line-md', 'logos', 'material-symbols', 'ph', 'mdi', 'teenyicons'] // <!--- this
+    }
+  }
 })

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 // Propsy komponentu
 const props = defineProps({
@@ -13,8 +13,9 @@ const props = defineProps({
   },
   options: {
     type: Array,
+    required: true,
     default: () => [] // Przykład: [{ value: 'en', label: 'English' }]
-  },
+  } as any,
   modelValue: {
     type: Array, // Zmieniono na tablicę, aby obsługiwać wiele wybranych wartości
     required: true
@@ -77,22 +78,33 @@ const selectClass = computed(() => {
   return `${baseClass} ${colorClass} ${sizeClass}`;
 });
 
-const selectedIndex = ref(0);
 // Obsługa zmiany wyboru wielu opcji
 function toggleOption(option: any) {
-  selectedIndex.value = props.modelValue.findIndex((selected: any) => selected === option.value);
+  const isOptionSelected = props.modelValue.includes(option.value);
 
-  if (selectedIndex.value === -1) {
-    if(props.multiple) {
-      props.modelValue.push(option.value)
-      emits('update:modelValue', props.modelValue); // Dodaj nową opcję
+  if (!isOptionSelected) {
+    if (props.multiple) {
+      // Znajdź indeks opcji w oryginalnej tablicy options
+      const optionIndex = props.options.findIndex((opt: any) => opt.value === option.value);
+      
+      // Tworzymy nową tablicę z zachowaniem kolejności
+      const newValue = [...props.modelValue];
+      newValue.push(option.value);
+      
+      // Sortujemy według kolejności w oryginalnej tablicy options
+      const sortedValue = newValue.sort((a: any, b: any) => {
+        const indexA = props.options.findIndex((opt: any) => opt.value === a);
+        const indexB = props.options.findIndex((opt: any) => opt.value === b);
+        return indexA - indexB;
+      });
+      
+      emits('update:modelValue', sortedValue);
     } else {
-      props.modelValue.splice(0, props.modelValue.length); 
-      props.modelValue.push(option.value)
-      emits('update:modelValue', props.modelValue); // Dodaj nową opcję
+      emits('update:modelValue', [option.value]);
     }
   } else {
-    emits('update:modelValue', props.modelValue.filter((selected: any) => selected !== option.value)); // Usuń wybraną opcję
+    const filteredValue = props.modelValue.filter((selected: any) => selected !== option.value);
+    emits('update:modelValue', filteredValue);
   }
 }
 
@@ -133,12 +145,12 @@ const selectedLabels = computed(() => {
     
     <ul class="max-h-60 overflow-auto ">
       <li
-      v-for="option in options as any"
-          :key="option.value"
-          class="relative flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
-          @click="toggleOption(option)"
-          >
-          <!-- Checkbox dla wybranej opcji -->
+        v-for="option in options"
+        :key="option.value"
+        class="relative flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+        @click="toggleOption(option)"
+      >
+        <!-- Checkbox dla wybranej opcji -->
           <icon
             v-if="isSelected(option)"
             name="clarity:success-line"

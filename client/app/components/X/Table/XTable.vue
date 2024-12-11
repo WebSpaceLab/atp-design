@@ -1,6 +1,4 @@
 <script setup>
-import { computed, ref } from 'vue';
-
 // Props
 const props = defineProps({
   rows: {
@@ -39,9 +37,13 @@ const props = defineProps({
   isColumnActions: {
     type: Boolean,
     default: false
+  },
+  columns: {
+    type: Array,
+    required: false,
+    default: () => []
   }
 });
-
 // Emitting events
 const emits = defineEmits(['select-all', 'query']);
 
@@ -49,7 +51,7 @@ let isShowActions = ref(false)
 
 // Generate 'head' dynamically from 'rows'
 const generatedHead = computed(() => {
-  return props.rows.length ? Object.keys(props.rows[0]) : [];
+  return props.columns.length ? props.columns : props.rows.length ? Object.keys(props.rows[0]) : [];
 });
 
 // Toggle select all checkboxes
@@ -72,12 +74,7 @@ function showFieldAction() {
 };
 
 // Ref for selected columns
-// const selectedColumns = ref(props.isColumnActions ? [...generatedHead.value, 'actions'] : generatedHead.value);
-const selectedColumns = useCookie('selectedColumns', {
-  type: Array,
-  default: () => ([...generatedHead.value]),
-  watch: true
-});
+const selectedColumns = ref(generatedHead.value);
 
 const generatedSelectHead = computed(() => {
   return generatedHead.value.map(header => ({ value: header, label: header, selected: true }));

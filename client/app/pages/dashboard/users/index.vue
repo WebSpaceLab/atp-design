@@ -16,9 +16,11 @@ const query = reactive({
   page: queryParams.value.page ? queryParams.value.page : 1,
   per_page: queryParams.value.per_page ? queryParams.value.per_page : 8,
 })
-
 async function getUsers() {
-  await get(query)
+  await get({
+    ...query,
+    month: query.month || '' // Convert null to empty string to satisfy type
+  })
 }
 
 onBeforeMount(async () => {
@@ -51,6 +53,7 @@ async function switchPerPage(event: number) {
             <div class="w-full h-full transition-all duration-500">
               <x-table
                 :rows="users"
+                :columns="['id', 'username', 'email', 'firstName', 'lastName', 'bio']"
                 justify="center"
                 :selected="true"
                 :loading="isLoading"

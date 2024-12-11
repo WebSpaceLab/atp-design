@@ -27,7 +27,7 @@ defineProps({
                 justify ? `justify-${justify}` : 'justify-start',
             ]"
         >
-            <span class="text-sm" :class="uppercase ? 'uppercase' : ''">
+            <span class="text-basic-light dark:text-basic-dark text-sm" :class="uppercase ? 'uppercase' : ''">
                 {{ name }}
             </span>
 

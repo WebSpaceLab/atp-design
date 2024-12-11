@@ -43,6 +43,7 @@ const props = defineProps({
   },
   columns: {
     type: Array,
+    required: true,
     default: () => []
   }
 });
@@ -166,10 +167,8 @@ watch(() => props.query.column, async () => {
 
           <div class="absolute inset-y-0 flex items-center right-0 rounded-l-lg">
             <select v-model="query.column" aria-label="Media date" id="date" class="lg:text-xs" :class="[colorClass, baseClass]">
-            <template v-for="month in allColumns" :key="month.value">
-              <option :value="month.value">{{ month.label }}</option>
-            </template>
-          </select>
+              <option v-for="column in allColumns" :key="column.value" :value="column.value">{{ column.label }}</option>
+            </select>
             <XTooltip text="Search filters" position="bottom-right">
               <XBtn
                 v-if="filter"
@@ -201,7 +200,7 @@ watch(() => props.query.column, async () => {
                 variant="ghost"
                 square
                 icon="i-line-md-close"
-                size="xs"
+                size="md"
               />
             </div>
 
@@ -217,11 +216,8 @@ watch(() => props.query.column, async () => {
                   <option value="desc">Sort by descending</option>
                   <option value="asc">Sort by ascending</option>
                 </select>
-
                 <select v-model="query.month" aria-label="Media date" id="date" class="w-60 bg-background-light dark:bg-background-dark rounded-lg text-muted-light dark:text-muted-dark dark:border-muted-dark shadow-sm lg:text-sm focus:outline-none focus:ring-focus focus:border-focus">
-                  <template v-for="month in allMonths" :key="month.value">
-                    <option :value="month.value">{{ month.label }}</option>
-                  </template>
+                  <option v-for="month in allMonths" :key="month.value" :value="month.value">{{ month.label }}</option>
                 </select>
               </div>
             </div>
